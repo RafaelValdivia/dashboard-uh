@@ -16,7 +16,7 @@ def color(rating: float) -> str:
             } 
     previous_value: str = list(color_dict.values())[0]
     for key in color_dict:
-        if key > rating:
+        if key >= rating:
             return previous_value
         else:
             previous_value = color_dict[key]
@@ -36,11 +36,7 @@ def crplot():
     #
     return fig, ax
 
-def rtng_pie(faculty:str):
-    if faculty == "SEMESTER":
-        rtng = sem_rtng
-    else:
-        rtng = fac_avrg[faculty]
+def rtng_pie(rtng: float):
     fig, ax = crplot()
     ax.pie([rtng, 10 - rtng],
                 colors=[color(rtng), "#77777777"],
@@ -54,34 +50,30 @@ def rtng_pie(faculty:str):
                 )
     return fig, ax
  
-def rtng_hist(faculty: str):
-    if faculty == "SEMESTER":
-        data = sem_data
-    else:
-        data = fac_data[faculty]
+def rtng_hist(data: dict):
     fig, ax = crplot()
     ax.set_yticks([])
     ax.set_xticks([])
-    ax.barh(range(4,36,6), [10. for _ in range(len(data))],
+    ax.barh(data.keys(), [10. for _ in range(len(data))],
             color="#77777777",
-            height=2
+            height=0.30
             )
-    bars = ax.barh(range(4,36,6), data.values(),
+    bars = ax.barh(data.keys(), data.values(),
                  color=[color(value) for value in data.values()],
-                 height=2
+                 height=0.30
                         )
     for bar, key in zip(bars, data):
         value = data[key]
         width = bar.get_width()
         width = width + 0.1 if width <= 9.0 else 10.1
         ax.text(width,
-                bar.get_y() + bar.get_height()/2 - 0.1,
+                bar.get_y() + bar.get_height()/2 - 0.03,
                 str(round(value,1)), 
                 ha="left", va="center",
                 fontsize=16, color=color(value),
                 fontweight="bold"
                 )
-        ax.text(0, bar.get_y() + bar.get_height() + 1.0,
+        ax.text(0, bar.get_y() + bar.get_height() + 0.1,
                 key, fontsize=20, color=fontcolor
                 )
     return fig, ax
@@ -107,7 +99,6 @@ def mark_hist(data: dict, colors: list[str]):
     fig, ax = crplot()
     fig.set_facecolor("none")
     bars = ax.bar(data.keys(), data.values(),
-           color=colors
            )
     ax.bar_label(bars, 
                  labels=data.values(), 
