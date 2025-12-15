@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # import matplotlib.animation as animation
 import numpy as np
 
-colors = ["#f00", "#cc0", "#0a0"]
+colors = ["#f00", "#ce0", "#0a0"]
 gb_cmap = mcolors.LinearSegmentedColormap.from_list("my_cmap", colors, 10)
 mpl.rcParams["font.family"] = "sans-serif"
 mpl.rcParams["font.sans-serif"] = [

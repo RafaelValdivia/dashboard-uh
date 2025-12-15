@@ -289,7 +289,7 @@ def show_main_dashboard():
 
     for index, image in enumerate(images):
         with cols[index % 3]:
-            st.image(image, width=100)
+            st.image(image, width=200)
 
 
 def evaluate_semester():
@@ -557,7 +557,6 @@ def show_comments():
                     "facultad": st.session_state.user_faculty,
                     "clase": clase,
                     "comentario": comentario,
-                    "calificacion": calificacion,
                     "fecha": datetime.now().strftime("%Y-%m-%d"),
                     "semestre": st.session_state.semestre_actual,
                 }
