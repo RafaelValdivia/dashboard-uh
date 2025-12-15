@@ -1,16 +1,26 @@
-import pandas as pd
 from random import uniform as rand
+
+import pandas as pd
 
 # Categorias a traves de las cuales se califica el semestre
 sem_cat: list[str] = [
- "Respeto a los horarios",
- "Disponibilidad de aulas",
- "Facilidad para el E.I.",
- "Bibliografía/Internet",
- "Carga de trabajo",
- "Ocio"
- ]
- 
+    "Respeto a los horarios",
+    "Disponibilidad de aulas",
+    "Facilidad para el E.I.",
+    "Bibliografía/Internet",
+    "Carga de trabajo",
+    "Ocio",
+]
+
+# Categorias para calificar una asignatura
+asig_cat = {
+    "Calidad del profesor",
+    "Recursos didácticos",
+    "Carga de trabajo",
+    "Justicia en la evaluación",
+    "Utilidad de los contenidos impartidos",
+}
+
 # Lista de todas las facultades
 faculties: list[str] = [
     "CONFIN",
@@ -31,12 +41,13 @@ faculties: list[str] = [
     "FLEX",
     "PSICO",
     "CSGH",
-    "FENHI"
-    ]
+    "FENHI",
+]
+
 
 # Asignaturas de la carrera de Ciencia de Datos
 # Nombre, semestre, año
-classes: list[tuple[str,int,int]] = [
+classes: list[tuple[str, int, int]] = [
     ("Filosofía", 1, 1),
     ("Análisis Matemático I", 1, 1),
     ("Álgebra Lineal", 1, 1),
@@ -89,7 +100,7 @@ classes: list[tuple[str,int,int]] = [
     ("Curso Optativo II", 7, 4),
     ("Metodología de la Investigación", 8, 4),
     ("Curso Electivo", 8, 4),
-    ("Culminación de Estudios", 8, 4)
+    ("Culminación de Estudios", 8, 4),
 ]
 
 # Matricula de todas las carreras de MATCOM
@@ -110,44 +121,48 @@ matricula: dict[str, int] = {
 
 # ID de todos los estudiantes de MATCOM
 ID_Estudiantes = [
-    (brigada,idE)
-    for brigada in matricula
-    for idE in range(1, matricula[brigada] + 1) 
+    (brigada, idE) for brigada in matricula for idE in range(1, matricula[brigada] + 1)
 ]
 
 MATCOM_Rtng = {
-    idE: {cat: int(rand(3,10)) for cat in sem_cat}
-    for idE in ID_Estudiantes
+    idE: {cat: int(rand(3, 10)) for cat in sem_cat} for idE in ID_Estudiantes
 }
 
 # Calificacion del Semestre de todas las facultades
 Sem_Rtng = {
-    faculty: {cat: round(rand(3,10),1) for cat in sem_cat}
-    for faculty in faculties
+    faculty: {cat: round(rand(3, 10), 1) for cat in sem_cat} for faculty in faculties
 }
 
 # Reemplazando el calculo de la calificacion del semestre de MATCOM
 Sem_Rtng["MATCOM"] = {
-    category: 
-        round(sum(MATCOM_Rtng[idE][category]
-            for idE in ID_Estudiantes
-        )/len(ID_Estudiantes), 1)
+    category: round(
+        sum(MATCOM_Rtng[idE][category] for idE in ID_Estudiantes) / len(ID_Estudiantes),
+        1,
+    )
     for category in sem_cat
 }
 # Exportando todas los datos a csv
 #
 Sem_Rtng_df = {
     "Facultad": [],
-    }
+}
 
 MATCOM_Rtng_df = {
     "Brigada": [],
     "ID": [],
 }
 
+VD_Rating_df = {
+    "Categoria": [key for key in asig_cat],
+    "Calificacion": [0.0 for key in asig_cat],
+}
+
 for category in sem_cat:
     Sem_Rtng_df[category] = []
     MATCOM_Rtng_df[category] = []
+
+for i in range(len(VD_Rating_df["Calificacion"])):
+    VD_Rating_df["Calificacion"][i] = rand(6, 10)
 
 # Calificacion deL semestre por facultad
 for faculty in faculties:
@@ -163,40 +178,43 @@ for idE in ID_Estudiantes:
 
 Sem_Rtng_df["Facultad"].append("GENERAL")
 for category in sem_cat:
-        Sem_Rtng_df[category].append(round(sum(Sem_Rtng_df[category])/len(Sem_Rtng_df[category]),1))
+    Sem_Rtng_df[category].append(
+        round(sum(Sem_Rtng_df[category]) / len(Sem_Rtng_df[category]), 1)
+    )
 
 # Calificacion del semestre de todos los estudiantes de MATCOM y sus notass
 MATCOM_df = {
     "Brigada": [],
     "ID": [],
     "Asignatura": [],
-    #"Semestre": [],
-    "Año":[],
-    "Nota": []
+    # "Semestre": [],
+    "Año": [],
+    "Nota": [],
 }
 for asignatura in classes:
-        if asignatura[1] % 2 == 1:
-            continue
-        for idE in ID_Estudiantes:
-            MATCOM_df["Brigada"].append(idE[0])
-            MATCOM_df["ID"].append(idE[1])
-            MATCOM_df["Asignatura"].append(asignatura[0])
-            #MATCOM_df["Semestre"].append(asignatura[1])
-            MATCOM_df["Año"].append(asignatura[2])
-            MATCOM_df["Nota"].append(
-                int(rand(2,6)) if idE[0][0] == "D" and int(idE[0][1]) == asignatura[2]
-                 else None
-                )
+    if asignatura[1] % 2 == 1:
+        continue
+    for idE in ID_Estudiantes:
+        MATCOM_df["Brigada"].append(idE[0])
+        MATCOM_df["ID"].append(idE[1])
+        MATCOM_df["Asignatura"].append(asignatura[0])
+        # MATCOM_df["Semestre"].append(asignatura[1])
+        MATCOM_df["Año"].append(asignatura[2])
+        MATCOM_df["Nota"].append(
+            int(rand(2, 6))
+            if idE[0][0] == "D" and int(idE[0][1]) == asignatura[2]
+            else None
+        )
 
-Sem_Rtng_df = pd.DataFrame(Sem_Rtng_df)
-MATCOM_Rtng_df = pd.DataFrame(MATCOM_Rtng_df)
-MATCOM_df = pd.DataFrame(MATCOM_df)
 
-Sem_Rtng_df.to_csv("Semester_Rating.csv")
-MATCOM_Rtng_df.to_csv("MATCOM_Rating.csv")
-MATCOM_df.to_csv("MATCOM_Classes.csv")
+Sem_Rtng_df = pd.DataFrame(Sem_Rtng_df).reset_index(drop=True)
+MATCOM_Rtng_df = pd.DataFrame(MATCOM_Rtng_df).reset_index(drop=True)
+MATCOM_df = pd.DataFrame(MATCOM_df).reset_index(drop=True)
+VD_Rating_df = pd.DataFrame(VD_Rating_df).reset_index(drop=True)
+
+Sem_Rtng_df.to_csv("Semester_Rating.csv", index=False)
+MATCOM_Rtng_df.to_csv("MATCOM_Rating.csv", index=False)
+MATCOM_df.to_csv("MATCOM_Classes.csv", index=False)
+VD_Rating_df.to_csv("VD_Rating.csv", index=False)
 # print("CALIFICACION DEL SEMESTRE POR FACULTAD")
 # print(Sem_Rtng_df)
-
-
-
