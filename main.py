@@ -9,6 +9,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import plots
 from PIL import Image
+from st_clickable_images import clickable_images as stci
 
 import streamlit as st
 
@@ -80,7 +81,7 @@ def load_sample_comments():
             "estudiante": "Carlos Rodríguez",
             "facultad": "FBIO",
             "clase": "Biología Molecular",
-            "profesor": "Dr. Carlos Méndez",
+            "profesor": "Dra. Ana García",
             "comentario": "La materia es interesante pero la carga de trabajo es excesiva.",
             "calificacion": 6,
             "fecha": "2023-12-05",
@@ -89,7 +90,7 @@ def load_sample_comments():
             "estudiante": "Anónimo",
             "facultad": "FHS",
             "clase": "Historia",
-            "profesor": "Dr. Carlos Méndez",
+            "profesor": "Dra. Laura Rodríguez",
             "comentario": "Me gustó la forma en que relaciona los hechos históricos con la actualidad.",
             "calificacion": 8.1,
             "fecha": "2023-12-08",
@@ -107,7 +108,7 @@ def load_sample_comments():
             "estudiante": "Laura Sánchez",
             "facultad": "FQ",
             "clase": "Química",
-            "profesor": "Dr. Carlos Méndez",
+            "profesor": "Dr. Eugenia del Río",
             "comentario": "Los laboratorios son muy prácticos y ayudan a entender la teoría.",
             "calificacion": 8.8,
             "fecha": "2023-06-20",
@@ -216,6 +217,7 @@ def main_dashboard():
         st.markdown("### Navegación")
         page_options = [
             "📊 Dashboard Principal",
+            "🎓 Dashboard Facultad",
             "⭐ Evaluar Semestre",
             "📚 Evaluar Clase",
             "💬 Comentarios",
@@ -246,6 +248,8 @@ def main_dashboard():
         show_comments()
     elif selected_page == "📈 Estadísticas":
         show_statistics()
+    elif selected_page == "🎓 Dashboard Facultad":
+        show_faculty_dashboard()
     elif (
         selected_page == "👨‍💼 Panel de Administración"
         and st.session_state.user_role == "administrador"
@@ -284,12 +288,63 @@ def show_main_dashboard():
 
     st.markdown("<div class='sub-header'>📊 Facultades</div>", unsafe_allow_html=True)
 
-    images = [Image.open(f"logos/{i}") for i in os.listdir("logos/") if "png" in i]
+    img_names = [i for i in os.listdir("logos/") if "png" in i]
+    images = [Image.open(f"logos/{i}") for i in img_names]
     cols = st.columns(3)
 
     for index, image in enumerate(images):
         with cols[index % 3]:
-            st.image(image, width=200)
+            with st.container(height=300):
+                st.image(image, width=250)
+            st.button(
+                f"Ir a la pagina de {img_names[index].capitalize().replace('.png', '')}"
+            )
+
+
+def show_faculty_dashboard():
+    """Muestra el dashboard principal con métricas y gráficos"""
+    st.markdown(
+        "<h1 class='main-header'>Dashboard MATCOM</h1>",
+        unsafe_allow_html=True,
+    )
+    col1, col2 = st.columns(2)
+    with col1:
+        st.image("logos/matcom.png", width=300)
+    # Métricas principales
+    st.markdown(
+        "<div class='sub-header'>📈 Métricas Generales de MATCOM</div>",
+        unsafe_allow_html=True,
+    )
+
+    df = st.session_state.rating_MATCOM
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.pyplot(plots.color_legend()[0])
+    col1, col2 = st.columns(2)
+    with col1:
+        avg_semester = df.loc["GENERAL"].mean()
+        st.pyplot(plots.rating_pie(avg_semester)[0])
+
+    with col2:
+        rating_semester = df.loc["GENERAL"]
+        st.pyplot(plots.rating_hist(rating_semester)[0])
+
+    with st.expander("Datos de facultades"):
+        st.pyplot(plots.fac_avrg(df)[0])
+
+    st.markdown("<div class='sub-header'>📊 Facultades</div>", unsafe_allow_html=True)
+
+    img_names = [i for i in os.listdir("logos/") if "png" in i]
+    images = [Image.open(f"logos/{i}") for i in img_names]
+    cols = st.columns(3)
+
+    for index, image in enumerate(images):
+        with cols[index % 3]:
+            with st.container(height=300):
+                st.image(image, width=250)
+            st.button(
+                f"Ir a la pagina de {img_names[index].capitalize().replace('.png', '')}"
+            )
 
 
 def evaluate_semester():
@@ -349,30 +404,30 @@ def evaluate_class():
     with st.form("evaluar_clase"):
         st.markdown("### Califica una clase específica")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            asignaturas = [
-                "Visualizacion de Datos",
-                "Matematica Aplicada",
-                "Bases de Datos",
-                "Estructura de Datos y Algoritmos",
-                "Probabilidades",
-                "Economia Politica",
-            ]
+        # col1, col2 = st.columns(2)
+        # with col1:
+        asignaturas = [
+            "Visualizacion de Datos",
+            "Matematica Aplicada",
+            "Bases de Datos",
+            "Estructura de Datos y Algoritmos",
+            "Probabilidades",
+            "Economia Politica",
+        ]
 
-            clase = st.selectbox("Clase:", asignaturas)
-        with col2:
-            profesores = [
-                "Claudia A. Damiani",
-                "Ania",
-                "Carlos",
-                "Raudel",
-                "Yanetxi",
-                "Irana",
-            ]
-            profesor = profesores[asignaturas.index(clase)]
-            st.text("Profesor:")
-            st.text(f"{profesor}")
+        clase = st.selectbox("Clase:", asignaturas)
+        # with col2:
+        #     profesores = [
+        #         "Claudia A. Damiani",
+        #         "Ania",
+        #         "Carlos",
+        #         "Raudel",
+        #         "Yanetxi",
+        #         "Irana",
+        #     ]
+        #     profesor = profesores[asignaturas.index(clase)]
+        #     st.text("Profesor:")
+        #     st.text(f"{profesor}")
 
         columns = st.columns(2)
 
@@ -419,6 +474,7 @@ def show_comments():
     clases = list(set(st.session_state.classes["Asignatura"]))
     clases = [clase + " (Ciencia de Datos)" for clase in clases] + ["Todas"]
     profesores = [
+        "Todos",
         "Dr. Carlos Méndez",
         "Dra. Ana García",
         "Prof. Miguel Torres",
@@ -426,48 +482,6 @@ def show_comments():
         "Dr. Javier López",
         "Prof. Elena Sánchez",
         "Dr. Fernando Martínez",
-        "Dra. Isabel Pérez",
-        "Prof. Roberto Díaz",
-        "Dra. Carmen Ruiz",
-        "Dr. Andrés Hernández",
-        "Prof. Patricia Gómez",
-        "Dra. Sofía Jiménez",
-        "Dr. Manuel Ortega",
-        "Prof. Raquel Castro",
-        "Dr. Luis Vargas",
-        "Dra. Beatriz Morales",
-        "Prof. Antonio Silva",
-        "Dra. Gabriela Romero",
-        "Dr. Sergio Navarro",
-        "Prof. Marta Vega",
-        "Dra. Jorge Mendoza",
-        "Dr. Adriana Ríos",
-        "Prof. Enrique Campos",
-        "Dra. Clara Herrera",
-        "Dr. David Soto",
-        "Prof. Lucía Peña",
-        "Dra. Juan Flores",
-        "Dr. Valeria Montes",
-        "Prof. Ricardo Paredes",
-        "Dr. Eduardo Rojas",
-        "Dra. Verónica León",
-        "Prof. Hugo Salazar",
-        "Dra. Natalia Guerrero",
-        "Dr. Óscar Cárdenas",
-        "Prof. Inés Molina",
-        "Dr. Arturo Miranda",
-        "Dra. Rosa Espinoza",
-        "Prof. Alberto Núñez",
-        "Dra. Daniela Marín",
-        "Dr. Francisco Reyes",
-        "Prof. Gloria Cordero",
-        "Dra. Pedro Salas",
-        "Dr. Mariana Ochoa",
-        "Prof. Ramón Ferrer",
-        "Dra. Teresa Acosta",
-        "Dr. Guillermo Ponce",
-        "Prof. Silvia Rangel",
-        "Dra. Ignacio Lozano",
         "Dr. Eugenia del Río",
     ]
 
@@ -505,8 +519,21 @@ def show_comments():
         st.info("No hay comentarios que coincidan con los filtros seleccionados.")
     else:
         for comment in comments_to_show:
-            stars = "⭐" * round(comment["calificacion"] / 2)
-            empty_stars = "☆" * (5 - round(comment["calificacion"] / 2))
+            stars = (
+                "⭐" * round(comment["calificacion"] / 2)
+                if comment["calificacion"] is not None
+                else ""
+            )
+            empty_stars = (
+                "☆" * (5 - round(comment["calificacion"] / 2))
+                if comment["calificacion"] is not None
+                else ""
+            )
+            stars_to_show = (
+                f"{stars}{empty_stars} ({comment['calificacion']}/10)"
+                if comment["calificacion"] is not None
+                else "Sin calificacion"
+            )
 
             st.markdown(
                 f"""
@@ -520,8 +547,8 @@ def show_comments():
                     </div>
                 </div>
                 <div style="margin: 0.5rem 0;">
-                    {stars}{empty_stars} ({comment["calificacion"]}/5)
-                </div>
+                    {stars_to_show}
+                    </div>
                 <div style="font-style: italic;">
                     "{comment["comentario"]}"
                 </div>
@@ -556,6 +583,8 @@ def show_comments():
                     "estudiante": st.session_state.current_user,
                     "facultad": st.session_state.user_faculty,
                     "clase": clase,
+                    "profesor": f"Profesor de la clase {clase}",
+                    "calificacion": None,
                     "comentario": comentario,
                     "fecha": datetime.now().strftime("%Y-%m-%d"),
                     "semestre": st.session_state.semestre_actual,
