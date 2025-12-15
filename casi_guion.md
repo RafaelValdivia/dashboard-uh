@@ -1,39 +1,10 @@
-# Guion Técnico - Video Promocional Plataforma de Evaluación
-
-## Metadatos
-- **Duración total:** 2:50 minutos
-- **Formato:** Video para redes sociales y presentaciones
-- **Público objetivo:** Estudiantes de la Universidad de La Habana
-
-## Storyboard Detallado
-
 | Escena | Plano | Sonido | Video |
-|--------|-------|---------|--------|
-| **ESCENA 1: EL PROBLEMA** | | | |
-| 1 | 1.1 | **Música suave instrumental** comienza | Vista aérea de la Universidad de La Habana al atardecer, transición suave |
-| 2 | 1.2 | **Voz en off (estudiante femenina):** "Este semestre elegí una optativa que parecía interesante, pero nadie me dijo que sería tan difícil organizar el tiempo" | Primer plano de estudiante viendo su horario en el teléfono con expresión de duda |
-| 3 | 1.3 | **Voz en off (estudiante masculino):** "Tengo un profesor que explica de maravilla, hace que la materia cobre vida. ¿Cómo hago para que más personas lo sepan?" | Estudiante tomando apuntes en clase, mira al profesor con aprobación |
-| **ESCENA 2: LA SOLUCIÓN** | | | |
-| 4 | 2.1 | **La música se vuelve más dinámica**<br>**Voz en off:** "Presentamos la nueva plataforma oficial de la Universidad de La Habana" | Logo de la Universidad de La Habana que se transforma en la interfaz moderna de la plataforma |
-| 5 | 2.2 | **Efectos de interfaz suaves** (clics digitales) | **TEXTO EN PANTALLA GRANDE:** **semestre.uh.cu** con animación |
-| **ESCENA 3: ACCESO Y EVALUACIÓN** | | | |
-| 6 | 3.1 | **Voz en off:** "Accede en segundos con tus credenciales universitarias" | Demostración real: estudiante abre la plataforma en su laptop, pantalla de login institucional |
-| 7 | 3.2 | **Voz en off:** "Selecciona la asignatura que quieres evaluar" | **DEMOSTRACIÓN INTERFAZ:** Menú desplegable mostrando asignaturas del semestre. Selecciona "Cálculo I" |
-| 8 | 3.3 | **Voz en off:** "Evalúa de forma estructurada con nuestro sistema de calificación" | **SISTEMA DE RATING VISUAL:** 4 categorías con estrellas (1-5):<br>• Claridad en explicaciones ★★★★★<br>• Carga de trabajo ★★★☆☆<br>• Utilidad del material ★★★★☆<br>• Equidad en evaluación ★★★★★ |
-| **ESCENA 4: COMENTARIOS CONSTRUCTIVOS** | | | |
-| 9 | 4.1 | **Voz en off:** "Comparte tu experiencia de forma anónima y constructiva" | **EJEMPLOS DE COMENTARIOS ÚTILES:**<br>"Las clases prácticas ayudaron a entender los conceptos teóricos"<br>"Los ejercicios adicionales fueron claves para el examen" |
-| 10 | 4.2 | **Voz en off:** "Reconoce específicamente lo que funciona bien y sugiere mejoras" | Más ejemplos:<br>"El profesor siempre disponible para dudas"<br>"Podría mejorarse la claridad en criterios de evaluación" |
-| **ESCENA 5: NAVEGACIÓN Y BÚSQUEDA** | | | |
-| 12 | 5.1 | **Voz en off:** "Demuestra al usuario cómo se califica en tiempo real" | **TUTORIAL VISUAL:** Animación paso a paso:<br>1. Selección de categoría<br>2. Clic en estrellas<br>3. Confirmación visual<br>4. Botón "Enviar evaluación" |
-| 13 | 5.2 | **Voz en off:** "Filtra información por profesor o asignatura específica" | **DEMOSTRACIÓN FILTROS:**<br>• Filtro activo: "Prof. García - Álgebra"<br>• Cambio a: "Asignatura: Física General"<br>• Resultados filtrados aparecen inmediatamente |
-| **ESCENA 6: IMPACTO** | | | |
-| 14 | 6.1 | **Voz en off:** "Tu opinión se transforma en datos útiles para la facultad" | Permite a los profesores saber:<br>• % de satisfacción por asignatura<br>• Comentarios más frecuentes<br>• Áreas de mejora identificadas |
-| 15 | 6.2 | **Voz en off:** "Ayuda a mejorar los planes de estudio" | Profesores en reunión de departamento revisando reportes anónimos en pantalla compartida |
-| 16 | 6.3 | **Voz en off:** "Destaca las buenas prácticas de enseñanza" | Ceremonia simbólica: profesor (rostro difuminado) recibe gráfico mostrando mejora continua en evaluaciones |
-| **ESCENA 7: LLAMADO A LA ACCIÓN** | | | |
-| 17 | 7.1 | **Voz en off:** "Tu experiencia vale. Tu opinión cuenta." | Grupo diverso de estudiantes mirando a cámara con confianza, sonrisas genuinas |
-| 18 | 7.2 | **Música alcanza su punto máximo** | **TEXTO EN PANTALLA:**<br>**🌐 semestre.uh.cu**<br>**📱 Accede desde cualquier dispositivo**<br>**🔒 100% anónimo y confidencial** |
-| 19 | 7.3 | **Voz en off:** "Juntos construyamos una Universidad que escucha" | Vista aérea de la colina universitaria, zoom out lento |
-| 20 | 7.4 | **Música hace fade out suavemente** | **LOGOS FINALES:**<br>Universidad de La Habana<br>#TuVozCuentaEnLaUH<br>@UniversidadUH |
-
----
+|---|---|---|---|
+| 1 | 1.1 | **Comienza Música** | Colores planos de la UH.<br>Transición al plano siguiente. |
+|  | 1.2 | **Voz en off:** "Imagina un espacio donde tu experiencia como estudiante se convierte en información valiosa para mejorar la universidad." | Montaje rápido de estudiantes interactuando con la plataforma desde sus dispositivos: revisando asignaturas, haciendo clics, viendo gráficos de opiniones. Se ven detalles de la interfaz limpia y moderna de la web. |
+| 2 | 2.1 | **Música:** Continúa, tono optimista.<br><br>**Voz en off:** "Presentamos la nueva plataforma oficial de la Universidad. Un espacio confidencial donde tu opinión es la protagonista." | La pantalla se limpia. Aparece el logo de la Universidad de La Habana junto al acceso a la plataforma (una simulación). Se ve a un estudiante accediendo desde su celular o laptop. |
+| 3 | 3.1 | **Efectos de sonido:** Sonidos de interfaz suaves (clic, deslizar).<br><br>**Voz en off:** "Explora, evalúa y comparte. Así de simple." | **Texto en pantalla:** **¿Qué puedes hacer en la plataforma?** |
+|  | 3.2 | **Voz en off:** "Califica tus asignaturas: evalúa carga de trabajo, claridad, utilidad. Valora a tus profesores de forma constructiva. Opina sobre el semestre. Todo es anónimo." | **Texto en pantalla:**<br><br>**1. Navegación:** El estudiante ingresa con sus credenciales universitarias. La pantalla muestra un dashboard claro: "Mis asignaturas", "Evaluar este semestre".<br><br>**2. Calificar:** Selecciona una asignatura. Se muestra un formulario con categorías específicas (ej: "Equidad en la evaluación", "Recursos proporcionados"). Iconos interactivos muestran cómo se llena.<br><br>**3. Explorar:** Se ven miniaturas de otras funcionalidades: "Ver estadísticas generales de una asignatura", "Filtrar comentarios por profesor".<br><br>**4. Enviar:** Clic en "Enviar". Animación de confirmación. |
+| 4 | 4.1 | **Voz en off:** "Tu feedback es **información valiosa**. Los departamentos y la facultad lo usan para reconocer buenas prácticas, mejorar recursos y adaptar la enseñanza. Juntos podemos optimizar la experiencia académica." | Imágenes de profesores y coordinadores revisando gráficos o resúmenes anónimos de los comentarios en pantallas, conversando en equipo docente. Se intercalan con primeros planos de estudiantes viendo gráficas de opiniones de otras asignaturas en la plataforma. |
+| 5 | 5.1 | **Voz en off:** "Tu voz marca la diferencia. Entra, evalúa y opina. **Por una Universidad de La Habana que escucha a sus estudiantes.**" | Primer plano de un grupo diverso de estudiantes mirando a cámara con confianza.<br><br>**Texto en pantalla:** 🌟 **Accede desde: semestre.uh.cu** 🌟 \| **#TuVozCuentaEnLaUH** |
+| 6 | 6.1 | La música hace fade out. | Plano aéreo de la UH. |
