@@ -88,7 +88,7 @@ def load_sample_comments():
         {
             "estudiante": "Anónimo",
             "facultad": "FHS",
-            "clase": "Historia",e
+            "clase": "Historia",
             "profesor": "Dr. Carlos Méndez",
             "comentario": "Me gustó la forma en que relaciona los hechos históricos con la actualidad.",
             "calificacion": 8.1,
@@ -284,12 +284,12 @@ def show_main_dashboard():
 
     st.markdown("<div class='sub-header'>📊 Facultades</div>", unsafe_allow_html=True)
 
-    images = [Image.open(f"logos/{i}") for i in os.listdir("logos/")]
+    images = [Image.open(f"logos/{i}") for i in os.listdir("logos/") if "png" in i]
     cols = st.columns(3)
 
     for index, image in enumerate(images):
         with cols[index % 3]:
-            st.image(image)
+            st.image(image, width=100)
 
 
 def evaluate_semester():
@@ -417,7 +417,7 @@ def show_comments():
     facultades = list(st.session_state.rating.index)
     facultades[facultades.index("GENERAL")] = "Todas"
     clases = list(set(st.session_state.classes["Asignatura"]))
-    clases = [clase + " (MATCOM)" for clase in clases] + ["Todas"]
+    clases = [clase + " (Ciencia de Datos)" for clase in clases] + ["Todas"]
     profesores = [
         "Dr. Carlos Méndez",
         "Dra. Ana García",
@@ -478,7 +478,7 @@ def show_comments():
     with col2:
         filter_class = st.selectbox(
             "Filtrar por clase",
-            clases,
+            clases[::-1],
         )
     with col3:
         filter_professor = st.selectbox("Filtrar por profesor", profesores)
@@ -498,7 +498,7 @@ def show_comments():
 
     if filter_professor != "Todos":
         comments_to_show = [
-            c for c in comments_to_show if c["semestre"] == filter_professor
+            c for c in comments_to_show if c["profesor"] == filter_professor
         ]
 
     if not comments_to_show:
@@ -541,19 +541,7 @@ def show_comments():
         st.markdown("### Agregar un comentario")
 
         with st.form("nuevo_comentario"):
-            clase = st.selectbox(
-                "Clase a comentar",
-                [
-                    "Cálculo I",
-                    "Programación",
-                    "Física",
-                    "Química",
-                    "Biología",
-                    "Historia",
-                    "Literatura",
-                    "Filosofía",
-                ],
-            )
+            clase = st.selectbox("Clase a comentar", clases[::-1])
 
             comentario = st.text_area(
                 "Tu comentario",
