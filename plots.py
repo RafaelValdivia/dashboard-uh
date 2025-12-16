@@ -133,3 +133,59 @@ def fac_avrg(df):
     ax.set_yticks(list(fac_df.index))
     # ax.tick_params(axis="both")
     return fig, ax
+
+
+def avrg_hist(data):
+    fig, ax = crplot()
+    min_lim = min(data.index)
+    min_lim = max(0, min_lim - 1)
+    max_lim = round(max(data["Nota"]) + 0.5, 0)
+    ax.set_xlim(min_lim, max_lim)
+    bars = ax.barh(
+        data["Brigada"](),
+        data["Nota"](),
+        color=[gb_cmap(value) for value in data["Nota"]],
+    )
+    ax.bar_label(bars, labels=[round(value, 1) for value in data["Nota"]])
+    ax.set_yticks(list(data["Brigada"]()))
+    ax.tick_params(axis="both", colors=fontcolor)
+    return fig, ax
+
+
+def mark_hist(data: dict):
+    fig, ax = crplot()
+    fig.set_facecolor("none")
+    bars = ax.bar(
+        data.index,
+        data["Nota"],
+    )
+    ax.bar_label(bars, labels=data["Nota"], fontsize=20)
+    ax.tick_params(axis="both")
+    return fig, ax
+
+
+def matr_pie(data: dict, colors: list[str]):
+    fig, ax = crplot()
+    ax.pie(
+        data["Count"],
+        labels=data["Brigada"],
+        colors=colors,
+        wedgeprops={"width": 0.35},
+    )
+    ax.pie(
+        data["Count"],
+        labels=data["Count"],
+        colors=["#ffffff00" for _ in data],
+        radius=0.70,
+        textprops={"color": "white", "fontsize": 14, "fontweight": "bold"},
+    )
+    ax.text(
+        0,
+        0,
+        sum(data["Count"]),
+        ha="center",
+        va="center",
+        fontsize=32,
+        fontweight="bold",
+    )
+    return fig, ax

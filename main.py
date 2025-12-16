@@ -297,7 +297,7 @@ def show_main_dashboard():
             with st.container(height=300):
                 st.image(image, width=250)
             st.button(
-                f"Ir a la pagina de {img_names[index].capitalize().replace('.png', '')}"
+                f"Ir a la pagina de {img_names[index].upper().replace('.PNG', '')}"
             )
 
 
@@ -307,44 +307,46 @@ def show_faculty_dashboard():
         "<h1 class='main-header'>Dashboard MATCOM</h1>",
         unsafe_allow_html=True,
     )
+    st.subheader("Dashboard Universitario de la Facultad de Matematica y Computacio")
     col1, col2 = st.columns(2)
     with col1:
         st.image("logos/matcom.png", width=300)
+    with col2:
+        st.text("""Facultad de Matemática y Computación. Fundada en el año de la corneta por un tipo que no conozco. Al principio tenia una sola carrera (Matemática) pero con el avance de la tecnología y la computación en el siglo XX se añadió la carrera de Ciencias de la Computación. Más recientemente se fundó la carrera de Ciencias de Datos por Yudivian "La Amenaza", Fiad y Fuilan. (Aqui es donde va la descripcion de la facultad)
+                """)
     # Métricas principales
+
     st.markdown(
         "<div class='sub-header'>📈 Métricas Generales de MATCOM</div>",
         unsafe_allow_html=True,
     )
 
     df = st.session_state.rating_MATCOM
+    df = df.iloc[:, 2:]
+    mf = st.session_state.classes
+    mf["Brigada"] = [brigada[0] for brigada in mf["Brigada"]]
+    notas = mf.groupby("Brigada")["Nota"].mean()
+    notas.loc["C"] = 4.2
+    notas.loc["M"] = 3.7
+    notas = round(notas, 1)
+    # st.dataframe(notas)
+
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.pyplot(plots.color_legend()[0])
     col1, col2 = st.columns(2)
     with col1:
-        avg_semester = df.loc["GENERAL"].mean()
+        avg_semester = df.mean().mean()
         st.pyplot(plots.rating_pie(avg_semester)[0])
 
     with col2:
-        rating_semester = df.loc["GENERAL"]
+        rating_semester = df.mean()
         st.pyplot(plots.rating_hist(rating_semester)[0])
 
-    with st.expander("Datos de facultades"):
-        st.pyplot(plots.fac_avrg(df)[0])
+    colors = ["#add", "#dac", "abcc:w"]
 
-    st.markdown("<div class='sub-header'>📊 Facultades</div>", unsafe_allow_html=True)
-
-    img_names = [i for i in os.listdir("logos/") if "png" in i]
-    images = [Image.open(f"logos/{i}") for i in img_names]
-    cols = st.columns(3)
-
-    for index, image in enumerate(images):
-        with cols[index % 3]:
-            with st.container(height=300):
-                st.image(image, width=250)
-            st.button(
-                f"Ir a la pagina de {img_names[index].capitalize().replace('.png', '')}"
-            )
+    # with st.expander("Comparativas de la Facultad"):
+    #     st.pyplot(plots.mark_hist(notas)[0])
 
 
 def evaluate_semester():
