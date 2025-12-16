@@ -220,7 +220,6 @@ def main_dashboard():
             "⭐ Evaluar Semestre",
             "📚 Evaluar Clase",
             "💬 Comentarios",
-            "📈 Estadísticas",
         ]
 
         if st.session_state.user_role == "administrador":
