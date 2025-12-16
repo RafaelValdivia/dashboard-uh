@@ -356,7 +356,9 @@ def evaluate_semester():
     )
 
     if st.session_state.user_role == "invitado":
-        st.warning("⚠️ Los invitados no pueden realizar evaluaciones. Inicia sesión como estudiante para participar.")
+        st.warning(
+            "️ Los invitados no pueden realizar evaluaciones. Inicia sesión como estudiante para participar."
+        )
         return
 
     with st.form("evaluar_semestre"):
