@@ -220,6 +220,7 @@ def main_dashboard():
             "⭐ Evaluar Semestre",
             "📚 Evaluar Clase",
             "💬 Comentarios",
+            "📈 Estadísticas",
         ]
 
         if st.session_state.user_role == "administrador":
@@ -244,7 +245,7 @@ def main_dashboard():
         evaluate_class()
     elif selected_page == "💬 Comentarios":
         show_comments()
-    elif selected_page == "📈 Estadísticas":
+    elif selected_page == "Guion del video":
         show_statistics()
     elif selected_page == "🎓 Dashboard Facultad":
         show_faculty_dashboard()
@@ -597,119 +598,9 @@ def show_comments():
         )
 
 
-def show_statistics():
-    """Muestra estadísticas detalladas"""
-    st.markdown(
-        "<div class='sub-header'>📈 Estadísticas Detalladas</div>",
-        unsafe_allow_html=True,
-    )
-
-    df = st.session_state.rating
-
-    # Filtros para estadísticas
-    st.markdown("<div class='faculty-selector'>", unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        stat_faculty = st.selectbox(
-            "Seleccionar facultad para estadísticas",
-            ["Todas", "Ingeniería", "Ciencias", "Humanidades"],
-        )
-    with col2:
-        stat_semester = st.selectbox(
-            "Seleccionar semestre", ["Todos", "2023-2", "2023-1", "2022-2", "2022-1"]
-        )
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # Aplicar filtros
-    filtered_df = df.copy()
-    if stat_faculty != "Todas":
-        filtered_df = filtered_df[filtered_df["facultad"] == stat_faculty]
-
-    if stat_semester != "Todos":
-        filtered_df = filtered_df[filtered_df["semestre"] == stat_semester]
-
-    if filtered_df.empty:
-        st.warning("No hay datos para los filtros seleccionados.")
-        return
-
-    # Gráficos de estadísticas
-    col1, col2 = st.columns(2)
-
-    with col1:
-        # Distribución de calificaciones
-        fig1 = px.histogram(
-            filtered_df,
-            x="calificacion_clase",
-            nbins=5,
-            title="Distribución de Calificaciones de Clases",
-            labels={
-                "calificacion_clase": "Calificación",
-                "count": "Número de Evaluaciones",
-            },
-            color_discrete_sequence=["#3B82F6"],
-        )
-        fig1.update_layout(bargap=0.1)
-        st.plotly_chart(fig1, use_container_width=True)
-
-    with col2:
-        # Calificaciones por profesor
-        if not filtered_df.empty and "profesor" in filtered_df.columns:
-            professor_ratings = (
-                filtered_df.groupby("profesor")["calificacion_clase"]
-                .mean()
-                .sort_values(ascending=False)
-            )
-            fig2 = px.bar(
-                professor_ratings,
-                x=professor_ratings.values,
-                y=professor_ratings.index,
-                orientation="h",
-                title="Calificación Promedio por Profesor",
-                labels={"x": "Calificación Promedio", "y": "Profesor"},
-                color=professor_ratings.values,
-                color_continuous_scale="Viridis",
-            )
-            fig2.update_layout(height=400)
-            st.plotly_chart(fig2, use_container_width=True)
-
-    # Comparación entre facultades
-    st.markdown("### Comparación entre Facultades")
-
-    faculty_comparison = (
-        df.groupby("facultad")
-        .agg(
-            {
-                "calificacion_clase": "mean",
-                "calificacion_semestre": "mean",
-                "dificultad": "mean",
-                "carga_trabajo": "mean",
-            }
-        )
-        .round(2)
-    )
-
-    st.dataframe(faculty_comparison.style.background_gradient(cmap="Blues"))
-
-    # Evolución temporal
-    st.markdown("### Evolución Temporal de Calificaciones")
-
-    if not filtered_df.empty:
-        time_series = (
-            filtered_df.groupby("semestre")["calificacion_clase"].mean().reset_index()
-        )
-        fig3 = px.line(
-            time_series,
-            x="semestre",
-            y="calificacion_clase",
-            markers=True,
-            title="Evolución de Calificaciones por Semestre",
-            labels={
-                "semestre": "Semestre",
-                "calificacion_clase": "Calificación Promedio",
-            },
-        )
-        fig3.update_traces(line=dict(width=3))
-        st.plotly_chart(fig3, use_container_width=True)
+def show_script():
+    with open("guion.md", "r") as guion:
+        st.markdown(guion)
 
 
 def show_admin_panel():
