@@ -357,7 +357,7 @@ def evaluate_semester():
 
     if st.session_state.user_role == "invitado":
         st.warning(
-            "️ Los invitados no pueden realizar evaluaciones. Inicia sesión como estudiante para participar."
+            "⚠️ Los invitados no pueden realizar evaluaciones. Inicia sesión como estudiante para participar."
         )
         return
 
@@ -397,12 +397,7 @@ def evaluate_class():
     )
 
     if st.session_state.user_role == "invitado":
-        st.warning(
-            "⚠️ Los invitados no pueden realizar evaluacii] - Launch an App in Minutes
-            Instantly turn your idea into an AI app—no code, just your words. Skip the dev team. Use AI to create your next app idea in minutes. Fast & Easy Setup. Just Click and Deploy. Pay-as-You-Grow.
-            Build an App Now
-            Our Famous.ai App Builder Tones. Inicia sesión como estudiante para participar."
-        )
+        st.warning("⚠️ Los invitados no pueden realizar evaluaciones")
         return
 
     with st.form("evaluar_clase"):
