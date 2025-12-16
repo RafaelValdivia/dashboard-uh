@@ -9,7 +9,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import plots
 from PIL import Image
-from st_clickable_images import clickable_images as stci
 
 import streamlit as st
 
