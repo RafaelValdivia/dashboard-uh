@@ -1,24 +1,31 @@
-import matplotlib as mpl
-import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
+import pandas as pd
+from data import *
 
-# import matplotlib.animation as animation
-import numpy as np
-
-colors = ["#f00", "#ce0", "#0a0"]
-gb_cmap = mcolors.LinearSegmentedColormap.from_list("my_cmap", colors, 10)
-mpl.rcParams["font.family"] = "sans-serif"
-mpl.rcParams["font.sans-serif"] = [
-    "Times New Roman",
-    "Arial",
-    "Helvetica",
-    "DejaVu Sans",
-]
+darkmode = True
+fontcolor = "#fff" if darkmode else "#000"
 
 
-def crplot(rows=1, cols=1, figsize=(8, 8)):
+def color(rating: float) -> str:
+    color_dict: dict[float, str] = {
+        0.0: "#bb0000ff",
+        2.0: "#cc6600ff",
+        4.0: "#e3cc00ff",
+        6.0: "#99cc00ff",
+        7.0: "#00bb00ff",
+        10.0: None,
+    }
+    previous_value: str = list(color_dict.values())[0]
+    for key in color_dict:
+        if key >= rating:
+            return previous_value
+        else:
+            previous_value = color_dict[key]
+
+
+def crplot():
     #
-    fig, ax = plt.subplots(rows, cols, figsize=figsize)
+    fig, ax = plt.subplots()
     fig.patch.set_facecolor("none")
     fig.patch.set_alpha(0.0)
     #
@@ -32,70 +39,42 @@ def crplot(rows=1, cols=1, figsize=(8, 8)):
     return fig, ax
 
 
-def color_legend():
-    fig, ax = crplot(figsize=(14, 1))
-
-    # Clean approach for standalone colorbar:
-
-    cb = mpl.colorbar.ColorbarBase(
-        ax, cmap=gb_cmap, norm=mpl.colors.Normalize(0, 10), orientation="horizontal"
-    )
-    ax.text(-0.5, -0.5, "1", color=gb_cmap(0.0), fontsize=40)
-    ax.text(10.2, -0.5, "10", color=gb_cmap(1.0), fontsize=40)
-    ax.set_xticks([])
-    return fig, ax
-
-
-def animate_pie(frame):
-    cur_rating = (frame / 30) ** 2 * rating * 2
-    if cur_rating <= rating:
-        ax.clear()
-        ax.pie(
-            [cur_rating, 10 - cur_rating],
-            # colors = []
-            startangle=90,
-            wedgeprops={"width": 0.25},
-        )
-
-
-def rating_pie(rating: float, more=False):
+def rating_pie(rtng: float):
     fig, ax = crplot()
     ax.pie(
-        [rating, 10 - rating],
-        colors=[gb_cmap(rating / 10), "#77777777"],
-        startangle=90,
+        [rtng, 10 - rtng],
+        colors=[color(rtng), "#77777777"],
+        startangle=90.0,
         wedgeprops={"width": 0.25},
     )
-    # ax.text(0,-.4, f"Calificación\npromedio",
-    #        ha="center", va="center", fontsize=20,
-    #            )
+
     ax.text(
         0,
         0,
-        str(round(rating, 1)),
+        str(round(rtng, 1)),
         ha="center",
         va="center",
-        fontsize=50,
-        color=gb_cmap(rating / 10),
-        fontweight="bold",
+        fontsize=32,
+        color=color(rtng),
     )
     return fig, ax
 
 
-def rating_hist(Series):
+def rating_hist(data: dict):
     fig, ax = crplot()
     ax.set_yticks([])
     ax.set_xticks([])
     ax.barh(
-        Series.index, [10.0 for _ in range(len(Series))], color="#77777775", height=0.30
+        data.keys(), [10.0 for _ in range(len(data))], color="#77777777", height=0.30
     )
     bars = ax.barh(
-        Series.index,
-        Series,
-        color=[gb_cmap(value / 10) for value in Series],
+        data.keys(),
+        data.values(),
+        color=[color(value) for value in data.values()],
         height=0.30,
     )
-    for bar, key, value in zip(bars, Series.index, Series):
+    for bar, key in zip(bars, data):
+        value = data[key]
         width = bar.get_width()
         width = width + 0.1 if width <= 9.0 else 10.1
         ax.text(
@@ -105,76 +84,56 @@ def rating_hist(Series):
             ha="left",
             va="center",
             fontsize=16,
-            color=gb_cmap(value / 10),
+            color=color(value),
             fontweight="bold",
         )
         ax.text(
-            0,
-            bar.get_y() + bar.get_height() + 0.1,
-            key,
-            fontsize=20,
+            0, bar.get_y() + bar.get_height() + 0.1, key, fontsize=20, color=fontcolor
         )
     return fig, ax
 
 
-def fac_avrg(df):
+def avrg_hist(data: dict):
     fig, ax = crplot()
-    fac_df = df.copy()
-    fac_df = fac_df.T.mean()
-    fac_df = round(fac_df, 2)
-    min_lim = min(fac_df)
+    min_lim = min(data.values())
     min_lim = max(0, min_lim - 1)
-    max_lim = round(max(fac_df) + 0.5, 0)
+    max_lim = round(max(data.values()) + 0.5, 0)
     ax.set_xlim(min_lim, max_lim)
     bars = ax.barh(
-        fac_df.index, fac_df, color=[gb_cmap(value / 10.0) for value in fac_df]
+        data.keys(), data.values(), color=[color(value) for value in data.values()]
     )
-
-    ax.set_yticks(list(fac_df.index))
-    # ax.tick_params(axis="both")
-    return fig, ax
-
-
-def avrg_hist(data):
-    fig, ax = crplot()
-    min_lim = min(data.index)
-    min_lim = max(0, min_lim - 1)
-    max_lim = round(max(data["Nota"]) + 0.5, 0)
-    ax.set_xlim(min_lim, max_lim)
-    bars = ax.barh(
-        data["Brigada"](),
-        data["Nota"](),
-        color=[gb_cmap(value) for value in data["Nota"]],
+    ax.bar_label(
+        bars, labels=[round(value, 1) for value in data.values()], color=fontcolor
     )
-    ax.bar_label(bars, labels=[round(value, 1) for value in data["Nota"]])
-    ax.set_yticks(list(data["Brigada"]()))
+    ax.set_yticks(list(data.keys()))
     ax.tick_params(axis="both", colors=fontcolor)
     return fig, ax
 
 
-def mark_hist(data: dict):
+def mark_hist(data: dict, colors: list[str]):
     fig, ax = crplot()
     fig.set_facecolor("none")
     bars = ax.bar(
-        data.index,
-        data["Nota"],
+        data.keys(),
+        data.values(),
     )
-    ax.bar_label(bars, labels=data["Nota"], fontsize=20)
-    ax.tick_params(axis="both")
+    ax.bar_label(bars, labels=data.values(), color=fontcolor, fontsize=20)
+    ax.tick_params(axis="both", colors=fontcolor)
     return fig, ax
 
 
 def matr_pie(data: dict, colors: list[str]):
     fig, ax = crplot()
     ax.pie(
-        data["Count"],
-        labels=data["Brigada"],
+        data.values(),
+        labels=data.keys(),
         colors=colors,
         wedgeprops={"width": 0.35},
+        textprops={"color": fontcolor},
     )
     ax.pie(
-        data["Count"],
-        labels=data["Count"],
+        data.values(),
+        labels=data.values(),
         colors=["#ffffff00" for _ in data],
         radius=0.70,
         textprops={"color": "white", "fontsize": 14, "fontweight": "bold"},
@@ -182,10 +141,11 @@ def matr_pie(data: dict, colors: list[str]):
     ax.text(
         0,
         0,
-        sum(data["Count"]),
+        sum(data.values()),
         ha="center",
         va="center",
         fontsize=32,
         fontweight="bold",
+        color=fontcolor,
     )
     return fig, ax
