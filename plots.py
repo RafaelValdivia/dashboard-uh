@@ -1,3 +1,5 @@
+from cProfile import label
+
 import matplotlib as mpl
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
@@ -148,16 +150,16 @@ def avrg_hist(data):
     )
     ax.bar_label(bars, labels=[round(value, 1) for value in data["Nota"]])
     ax.set_yticks(list(data["Brigada"]()))
-    ax.tick_params(axis="both", colors=fontcolor)
+    ax.tick_params(axis="both")
     return fig, ax
 
 
-def mark_hist(data: dict):
+def mark_hist(data):
     fig, ax = crplot()
     fig.set_facecolor("none")
     bars = ax.bar(
-        data.index,
         data["Nota"],
+        data["Count"],
     )
     ax.bar_label(bars, labels=data["Nota"], fontsize=20)
     ax.tick_params(axis="both")
@@ -165,12 +167,14 @@ def mark_hist(data: dict):
 
 
 def matr_pie(data: dict, colors: list[str]):
+    print(data)
     fig, ax = crplot()
     ax.pie(
         data["Count"],
         labels=data["Brigada"],
         colors=colors,
         wedgeprops={"width": 0.35},
+        textprops={"fontsize": 20, "fontweight": "bold"},
     )
     ax.pie(
         data["Count"],

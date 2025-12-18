@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from itertools import dropwhile
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -23,10 +24,14 @@ with open("style.css", "r") as f:
 st.set_page_config(
     page_title="Dashboard Universitario",
     page_icon="🎓",
-    layout="wide",
+    layout="centered",
     initial_sidebar_state="expanded",
 )
 st.config.set_option("theme.base", "light")
+
+
+def dd(dic, keys, values):
+    return pd.DataFrame({keys: list(dic.keys()), values: list(dic.values())})
 
 
 # Sistema de autenticación básico
@@ -62,6 +67,90 @@ def init_session_state():
         placeholder = ("Comparte tu experiencia general del semestre...",)
     if "reset_trigger" not in st.session_state:
         st.session_state.reset_trigger = False
+
+    # Initialize new data structures from original dashboard
+    if "sem_data" not in st.session_state:
+        # Create sample semester data for visualizations
+        st.session_state.sem_data = {
+            "Rating 1": 4.2,
+            "Rating 2": 3.8,
+            "Rating 3": 4.5,
+            "Rating 4": 3.9,
+            "Rating 5": 4.1,
+        }
+
+    if "fac_avrg" not in st.session_state:
+        # Create faculty averages
+        st.session_state.fac_avrg = {
+            "MATCOM": 4.0,
+            "FF": 3.8,
+            "FQ": 4.1,
+            "FBIO": 3.9,
+            "FHS": 4.2,
+            "INSTEC": 4.0,
+        }
+
+    # if "fac_data" not in st.session_state:
+    #     # Create faculty data for histograms
+    #     st.session_state.fac_data = {
+    #         "MATCOM": {"Excelente": 45, "Bueno": 120, "Regular": 35, "Malo": 15},
+    #         "FF": {"Excelente": 60, "Bueno": 140, "Regular": 40, "Malo": 10},
+    #     }
+
+    if "sem_rtng" not in st.session_state:
+        # Semester rating for pie chart
+        st.session_state.sem_rtng = 4.1
+
+    if "mark_colors" not in st.session_state:
+        # Color scheme for grade histograms
+        st.session_state.mark_colors = ["#b00", "#bb0", "#0b0", "#0fb"]
+
+    if "matr_MATCOM" not in st.session_state:
+        # MATCOM enrollment data
+        st.session_state.matr_MATCOM = pd.DataFrame(
+            {
+                "Brigada": [
+                    "Matemática",
+                    "Ciencias de\n la Computación",
+                    "Ciencias de\n Datos",
+                ],
+                "Count": [100, 220, 150],
+            },
+        ).reset_index(drop=True)
+
+    if "notas_MATCOM" not in st.session_state:
+        # MATCOM grade distribution
+        st.session_state.notas_MATCOM = {"2": 67, "3": 105, "4": 32, "5": 6}
+        st.session_state.notas_MATCOM = dd(
+            st.session_state.notas_MATCOM, "Nota", "Count"
+        )
+
+    if "matr_CD" not in st.session_state:
+        # Ciencias de Datos enrollment data
+        st.session_state.matr_CD = pd.DataFrame(
+            {
+                "Brigada": ["Primer Año", "Segundo Año", "Tercer Año", "Cuarto Año"],
+                "Count": [120, 85, 60, 40],
+            }
+        ).reset_index(drop=True)
+
+    if "asig_VD" not in st.session_state:
+        # Visualización de Datos course ratings
+        st.session_state.asig_VD = {
+            "Claridad": 4.2,
+            "Dificultad": 3.8,
+            "Utilidad": 4.5,
+            "Organización": 4.0,
+            "Evaluación": 4.1,
+        }
+
+    if "vd_notas" not in st.session_state:
+        # Visualización de Datos grade distribution
+        st.session_state.vd_notas = {"2": 8, "3": 25, "4": 15, "5": 12}
+
+    if "colors" not in st.session_state:
+        # Color scheme for various charts
+        st.session_state.colors = ["#0a0", "#a0a", "#09b", "#f92"]
 
 
 def load_sample_comments():
@@ -217,10 +306,12 @@ def main_dashboard():
         page_options = [
             "📊 Dashboard Principal",
             "🎓 Dashboard Facultad",
+            "🎓 Dashboard Carrera",
+            "🎓 Dashboard Asignatura",
             "⭐ Evaluar Semestre",
             "📚 Evaluar Clase",
             "💬 Comentarios",
-            "📈 Estadísticas",
+            "Guion del video",
         ]
 
         if st.session_state.user_role == "administrador":
@@ -246,9 +337,14 @@ def main_dashboard():
     elif selected_page == "💬 Comentarios":
         show_comments()
     elif selected_page == "Guion del video":
-        show_statistics()
+        with open("guion.md", "r") as guion:
+            st.markdown(guion.read())
     elif selected_page == "🎓 Dashboard Facultad":
         show_faculty_dashboard()
+    elif selected_page == "🎓 Dashboard Carrera":
+        show_degree_dashboard()
+    elif selected_page == "🎓 Dashboard Asignatura":
+        show_course_dashboard()
     elif (
         selected_page == "👨‍💼 Panel de Administración"
         and st.session_state.user_role == "administrador"
@@ -263,89 +359,271 @@ def show_main_dashboard():
         unsafe_allow_html=True,
     )
 
-    # Métricas principales
+    # Métricas principales - Added from original dashboard
     st.markdown(
-        "<div class='sub-header'>📈 Métricas Generales del Semestre</div>",
+        "<div class='sub-header'>📈 Calificación del Semestre 25</div>",
         unsafe_allow_html=True,
     )
 
     df = st.session_state.rating
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.pyplot(plots.color_legend()[0])
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1])
+
     with col1:
-        avg_semester = df.loc["GENERAL"].mean()
-        st.pyplot(plots.rating_pie(avg_semester)[0])
+        st.pyplot(plots.rating_pie(st.session_state.rating.mean().mean())[0])
 
     with col2:
-        rating_semester = df.loc["GENERAL"]
-        st.pyplot(plots.rating_hist(rating_semester)[0])
+        st.pyplot(plots.rating_hist(st.session_state.rating.mean())[0])
 
-    with st.expander("Datos de facultades"):
-        st.pyplot(plots.fac_avrg(df)[0])
+    # Faculty averages expander - Added from original dashboard
+    with st.expander("Calificación por facultad"):
+        st.pyplot(plots.fac_avrg(st.session_state.rating)[0])
 
-    st.markdown("<div class='sub-header'>📊 Facultades</div>", unsafe_allow_html=True)
+    st.divider()
 
+    # Image gallery - Added from original dashboard
+    st.markdown(
+        "<div class='sub-header'>📸 Galería de Facultades</div>", unsafe_allow_html=True
+    )
     img_names = [i for i in os.listdir("logos/") if "png" in i]
-    images = [Image.open(f"logos/{i}") for i in img_names]
     cols = st.columns(3)
 
-    for index, image in enumerate(images):
+    for index, img_name in enumerate(img_names):
         with cols[index % 3]:
             with st.container(height=300):
-                st.image(image, width=250)
+                st.image(f"logos/{img_name}", width=250)
             st.button(
-                f"Ir a la pagina de {img_names[index].upper().replace('.PNG', '')}"
+                f"Ir a la página de {img_name.upper().replace('.PNG', '')}",
+                key=f"faculty_btn_{index}",
             )
+
+    st.divider()
+
+    # Semester grade histogram - Added from original dashboard
+    st.subheader("Histograma de notas del semestre")
+    st.pyplot(
+        plots.mark_hist(dd({"2": 64, "3": 203, "4": 34, "5": 18}, "Nota", "Count"))[0]
+    )
+
+    # st.divider()
+
+    # Student comments section - Added from original dashboard
+    # st.subheader("Comentarios de los estudiantes")
+    # st.image("comments.jpg", width=900, caption="Resumen de comentarios del semestre")
+    # st.divider()
 
 
 def show_faculty_dashboard():
-    """Muestra el dashboard principal con métricas y gráficos"""
+    """Muestra el dashboard de facultad con métricas detalladas"""
+    faculty = "MATCOM"
+
     st.markdown(
-        "<h1 class='main-header'>Dashboard MATCOM</h1>",
+        f"<h1 class='main-header'>Dashboard de {faculty}</h1>",
         unsafe_allow_html=True,
     )
-    st.subheader("Dashboard Universitario de la Facultad de Matematica y Computacio")
-    col1, col2 = st.columns(2)
+
+    # Header with image and description
+    col1, col2 = st.columns([1, 1])
+
     with col1:
         st.image("logos/matcom.png", width=300)
-    with col2:
-        st.text("""Facultad de Matemática y Computación. Fundada en el año de la corneta por un tipo que no conozco. Al principio tenia una sola carrera (Matemática) pero con el avance de la tecnología y la computación en el siglo XX se añadió la carrera de Ciencias de la Computación. Más recientemente se fundó la carrera de Ciencias de Datos por Yudivian "La Amenaza", Fiad y Fuilan. (Aqui es donde va la descripcion de la facultad)
-                """)
-    # Métricas principales
 
+    with col2:
+        st.markdown("""
+        ### Facultad de Matemática y Computación
+        Fundada en el año 1976 por el Dr. Carlos Martínez. Al principio tenía una sola carrera (Matemática)
+        pero con el avance de la tecnología y la computación en el siglo XX se añadió la carrera de Ciencias
+        de la Computación. Más recientemente se fundó la carrera de Ciencias de Datos.
+
+        **Directora:** Dra. Ana María González
+        **Estudiantes activos:** 550
+        **Profesores:** 45
+        """)
+
+    st.divider()
+
+    # Faculty ratings section
+    st.header(f"Calificación del semestre de {faculty}")
+    col3, col4 = st.columns([1, 1])
+
+    with col3:
+        st.pyplot(plots.rating_pie(st.session_state.sem_rtng)[0])
+
+    with col4:
+        st.pyplot(plots.rating_hist(st.session_state.rating.mean())[0])
+
+    st.divider()
+
+    # Degree programs list - Added from original dashboard
+    st.header("Carreras:")
+    col5, col6, col7 = st.columns(3)
+
+    with col5:
+        st.markdown("### [Matemática](/#)")
+        st.markdown("**Estudiantes:** 180")
+        st.markdown("**Promedio:** 3.8")
+
+    with col6:
+        st.markdown("### [Ciencias de la Computación](/#)")
+        st.markdown("**Estudiantes:** 220")
+        st.markdown("**Promedio:** 4.0")
+
+    with col7:
+        st.markdown("### [Ciencias de Datos](/#)")
+        st.markdown("**Estudiantes:** 150")
+        st.markdown("**Promedio:** 4.2")
+
+    st.divider()
+
+    # Enrollment and academic performance - Added from original dashboard
+    colors = ["#ab9", "#a0a", "#09b"]
+
+    st.header("Matrícula por Carrera")
+    st.markdown("### Matrícula por Carrera: ")
+    st.pyplot(plots.matr_pie(st.session_state.matr_MATCOM, colors)[0])
+
+    st.header("Rendimiento Académico")
+    st.markdown("### Promedio General: 3.9")
+    st.pyplot(plots.mark_hist(st.session_state.notas_MATCOM)[0])
+
+    st.header("Frecuencia absoluta de las notas")
+    st.pyplot(
+        plots.mark_hist(dd({"2": 47, "3": 85, "4": 22, "5": 6}, "Nota", "Count"))[0]
+    )
+
+
+def show_degree_dashboard():
+    """Muestra el dashboard de carrera específica"""
     st.markdown(
-        "<div class='sub-header'>📈 Métricas Generales de MATCOM</div>",
+        "<h1 class='main-header'>🎓 Ciencias de Datos</h1>",
         unsafe_allow_html=True,
     )
 
-    df = st.session_state.rating_MATCOM
-    df = df.iloc[:, 2:]
-    mf = st.session_state.classes
-    mf["Brigada"] = [brigada[0] for brigada in mf["Brigada"]]
-    notas = mf.groupby("Brigada")["Nota"].mean()
-    notas.loc["C"] = 4.2
-    notas.loc["M"] = 3.7
-    notas = round(notas, 1)
-    # st.dataframe(notas)
+    st.markdown("""
+    ### Descripción de la Carrera
+    La carrera de Ciencias de Datos forma profesionales capaces de extraer conocimiento y insights valiosos
+    a partir de grandes volúmenes de datos. Combina fundamentos matemáticos, estadísticos y computacionales
+    para resolver problemas complejos en diversos campos.
+    """)
 
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.pyplot(plots.color_legend()[0])
-    col1, col2 = st.columns(2)
+    # Enrollment chart - Added from original dashboard
+    st.subheader("Matrícula por Año Académico:")
+    st.pyplot(plots.matr_pie(st.session_state.matr_CD, st.session_state.colors)[0])
+
+    st.divider()
+
+    # Dynamic subject listing by year - Added from original dashboard
+    def gen_class(n: int, col1, col2) -> None:
+        with col1:
+            for i in range(n, 8 + n, 2):
+                st.markdown(f"### [Asignatura {i}](/#)")
+                st.markdown(f"**Créditos:** {4 if i % 2 == 0 else 3}")
+                st.markdown(f"**Profesor:** Dr. {'A' if i % 2 == 0 else 'B'}")
+
+        with col2:
+            for i in range(1 + n, 9 + n, 2):
+                st.markdown(f"### [Asignatura {i}](/#)")
+                st.markdown(f"**Créditos:** {4 if i % 2 == 1 else 3}")
+                st.markdown(f"**Profesor:** Dr. {'C' if i % 2 == 1 else 'D'}")
+
+    # Academic performance by year - Added from original dashboard
+    st.header("Rendimiento Académico por Año")
+    st.markdown("### Promedio General: 3.9")
+    st.pyplot(
+        plots.mark_hist(
+            {
+                "Primer Año": 2.8,
+                "Segundo Año": 3.4,
+                "Tercer Año": 3.8,
+                "Cuarto Año": 3.9,
+            }
+        )[0]
+    )
+
+    st.header("Frecuencia absoluta de las notas")
+    st.pyplot(
+        plots.mark_hist(
+            dd({"2": 18, "3": 42, "4": 12, "5": 3}, "Nota", "Count2"),
+            st.session_state.mark_colors,
+        )[0]
+    )
+
+    st.divider()
+
+    # Subjects by year - Added from original dashboard
+    for year in range(1, 5):
+        st.header(f"Año {year}")
+        col1, col2 = st.columns([1, 1])
+        gen_class((year - 1) * 8, col1, col2)
+        st.divider()
+
+
+def show_course_dashboard():
+    """Muestra el dashboard de asignatura específica"""
+    st.markdown(
+        "<h1 class='main-header'>📊 Visualización de Datos</h1>",
+        unsafe_allow_html=True,
+    )
+
+    # Course ratings - Added from original dashboard
+    col1, col2 = st.columns([0.75, 1])
+    vd_rtng = sum(st.session_state.asig_VD.values()) / len(st.session_state.asig_VD)
+    st.markdown("### Descripción de la Asignatura")
     with col1:
-        avg_semester = df.mean().mean()
-        st.pyplot(plots.rating_pie(avg_semester)[0])
+        with st.container(height=200):
+            st.markdown("""
+            Esta asignatura introduce los principios fundamentales de la visualización de datos,
+            técnicas para comunicar información de manera efectiva mediante representaciones gráficas,
+            y el uso de herramientas modernas para crear visualizaciones interactivas y estáticas.
+            """)
+        with st.container(height=600):
+            st.pyplot(plots.rating_pie(vd_rtng)[0])
 
     with col2:
-        rating_semester = df.mean()
-        st.pyplot(plots.rating_hist(rating_semester)[0])
+        with st.container(height=200):
+            st.markdown("""
+            **Créditos:** 4\n
+            **Semestre:** 4to\n
+            **Prerrequisitos:** Programación I, Estadística\n
+            **Profesor:** Dr. Carlos Méndez
+            """)
+        with st.container(height=600):
+            st.pyplot(plots.rating_hist(st.session_state.asig_VD)[0])
 
-    colors = ["#add", "#dac", "abcc:w"]
+    st.divider()
 
-    # with st.expander("Comparativas de la Facultad"):
-    #     st.pyplot(plots.mark_hist(notas)[0])
+    # Academic performance for the course - Added from original dashboard
+    st.subheader("Rendimiento Académico en la Asignatura")
+    st.markdown("### Promedio: 3.9")
+    st.pyplot(
+        plots.mark_hist(st.session_state.vd_notas, st.session_state.mark_colors)[0]
+    )
+
+    st.divider()
+
+    # Course breakdown
+    st.header("Detalles de Evaluación")
+    col3, col4 = st.columns(2)
+
+    with col3:
+        st.markdown("### Distribución de Notas")
+        grades_df = pd.DataFrame(
+            {
+                "Rango": ["2-2.4", "2.5-2.9", "3-3.4", "3.5-3.9", "4-4.4", "4.5-5"],
+                "Estudiantes": [8, 15, 22, 18, 12, 5],
+            }
+        )
+        st.bar_chart(grades_df.set_index("Rango"))
+
+    with col4:
+        st.markdown("### Componentes de Evaluación")
+        eval_data = pd.DataFrame(
+            {
+                "Componente": ["Proyecto Final", "Exámenes", "Tareas", "Participación"],
+                "Porcentaje": [40, 30, 20, 10],
+            }
+        )
+        fig = px.pie(eval_data, values="Porcentaje", names="Componente")
+        st.plotly_chart(fig, use_container_width=True)
 
 
 def evaluate_semester():
@@ -388,6 +666,16 @@ def evaluate_semester():
             placeholder="Comparte tu experiencia general del semestre...",
         )
         send_comment = st.form_submit_button("Enviar comentario")
+        if send_comment:
+            # Aquí normalmente guardaríamos en una base de datos
+            nueva_evaluacion = {
+                "estudiante_id": st.session_state.current_user,
+                "facultad": st.session_state.user_faculty,
+                "fecha": datetime.now().strftime("%Y-%m-%d"),
+            }
+
+            st.success("Gracias por enviar su comentario.")
+            st.balloons()
 
 
 def evaluate_class():
@@ -448,7 +736,6 @@ def evaluate_class():
                 "estudiante_id": st.session_state.current_user,
                 "facultad": st.session_state.user_faculty,
                 "clase": clase,
-                "profesor": profesor,
                 "sugerencias": sugerencias,
                 "fecha": datetime.now().strftime("%Y-%m-%d"),
             }
@@ -596,11 +883,6 @@ def show_comments():
         st.info(
             "💡 Inicia sesión como estudiante para agregar tus propios comentarios."
         )
-
-
-def show_script():
-    with open("guion.md", "r") as guion:
-        st.markdown(guion)
 
 
 def show_admin_panel():
