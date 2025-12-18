@@ -37,8 +37,6 @@ def crplot(rows=1, cols=1, figsize=(8, 8)):
 def color_legend():
     fig, ax = crplot(figsize=(14, 1))
 
-    # Clean approach for standalone colorbar:
-
     cb = mpl.colorbar.ColorbarBase(
         ax, cmap=gb_cmap, norm=mpl.colors.Normalize(0, 10), orientation="horizontal"
     )

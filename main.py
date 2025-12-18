@@ -365,6 +365,10 @@ def show_main_dashboard():
         unsafe_allow_html=True,
     )
 
+    col1, col2, col3 = st.columns([1, 2, 1])
+
+    with col2:
+        st.pyplot(plots.color_legend()[0])
     df = st.session_state.rating
     col1, col2 = st.columns([1, 1])
 
@@ -483,8 +487,8 @@ def show_faculty_dashboard():
 
     st.header("Rendimiento Académico")
     st.markdown("### Promedio General: 3.9")
-    careers
-    st.pyplot()[0])
+    # careers
+    # st.pyplot()[0])
 
     st.header("Frecuencia absoluta de las notas")
     st.pyplot(
