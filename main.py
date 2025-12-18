@@ -483,7 +483,8 @@ def show_faculty_dashboard():
 
     st.header("Rendimiento Académico")
     st.markdown("### Promedio General: 3.9")
-    st.pyplot(plots.mark_hist(st.session_state.notas_MATCOM)[0])
+    careers
+    st.pyplot()[0])
 
     st.header("Frecuencia absoluta de las notas")
     st.pyplot(
