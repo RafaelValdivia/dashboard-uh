@@ -915,6 +915,7 @@ class FacultyDashboardView:
             st.markdown(" ")
             st.markdown(" ")
             st.markdown(" ")
+            st.markdown(" ")
             with st.expander("🎯 Perfil del Graduado"):
                 profile_points = FacultyDashboardView.get_graduate_profile(
                     faculty, selected_career
