@@ -1,10 +1,9 @@
+# Updated plots.py - removing broken functions
 from cProfile import label
 
 import matplotlib as mpl
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
-
-# import matplotlib.animation as animation
 import numpy as np
 
 colors = ["#f00", "#ce0", "#0a0"]
@@ -19,22 +18,33 @@ mpl.rcParams["font.sans-serif"] = [
 
 
 def crplot(rows=1, cols=1, figsize=(8, 8)):
-    #
+    """Create a clean plot with transparent background"""
     fig, ax = plt.subplots(rows, cols, figsize=figsize)
     fig.patch.set_facecolor("none")
     fig.patch.set_alpha(0.0)
-    #
-    ax.set_facecolor("none")
-    ax.patch.set_alpha(0.0)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.spines["bottom"].set_visible(False)
-    ax.spines["left"].set_visible(False)
-    #
+
+    # Handle single axis or multiple axes
+    if hasattr(ax, "__iter__"):
+        for a in ax.flat:
+            a.set_facecolor("none")
+            a.patch.set_alpha(0.0)
+            a.spines["top"].set_visible(False)
+            a.spines["right"].set_visible(False)
+            a.spines["bottom"].set_visible(False)
+            a.spines["left"].set_visible(False)
+    else:
+        ax.set_facecolor("none")
+        ax.patch.set_alpha(0.0)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.spines["bottom"].set_visible(False)
+        ax.spines["left"].set_visible(False)
+
     return fig, ax
 
 
 def color_legend():
+    """Create a color legend for ratings"""
     fig, ax = crplot(figsize=(14, 1))
 
     cb = mpl.colorbar.ColorbarBase(
@@ -46,19 +56,8 @@ def color_legend():
     return fig, ax
 
 
-def animate_pie(frame):
-    cur_rating = (frame / 30) ** 2 * rating * 2
-    if cur_rating <= rating:
-        ax.clear()
-        ax.pie(
-            [cur_rating, 10 - cur_rating],
-            # colors = []
-            startangle=90,
-            wedgeprops={"width": 0.25},
-        )
-
-
 def rating_pie(rating: float, more=False):
+    """Create a pie chart showing rating"""
     fig, ax = crplot()
     ax.pie(
         [rating, 10 - rating],
@@ -66,9 +65,6 @@ def rating_pie(rating: float, more=False):
         startangle=90,
         wedgeprops={"width": 0.25},
     )
-    # ax.text(0,-.4, f"Calificación\npromedio",
-    #        ha="center", va="center", fontsize=20,
-    #            )
     ax.text(
         0,
         0,
@@ -83,19 +79,29 @@ def rating_pie(rating: float, more=False):
 
 
 def rating_hist(Series):
+    """Create a horizontal bar chart for ratings"""
     fig, ax = crplot()
     ax.set_yticks([])
     ax.set_xticks([])
+
+    # Ensure Series has an index
+    if not hasattr(Series, "index"):
+        Series = pd.Series(Series)
+
+    # Background bars
     ax.barh(
         Series.index, [10.0 for _ in range(len(Series))], color="#77777775", height=0.30
     )
+
+    # Rating bars
     bars = ax.barh(
         Series.index,
-        Series,
-        color=[gb_cmap(value / 10) for value in Series],
+        Series.values,
+        color=[gb_cmap(value / 10) for value in Series.values],
         height=0.30,
     )
-    for bar, key, value in zip(bars, Series.index, Series):
+
+    for bar, key, value in zip(bars, Series.index, Series.values):
         width = bar.get_width()
         width = width + 0.1 if width <= 9.0 else 10.1
         ax.text(
@@ -118,76 +124,130 @@ def rating_hist(Series):
 
 
 def fac_avrg(df):
+    """Create faculty average bar chart"""
     fig, ax = crplot()
+
+    # Ensure df is a DataFrame with proper indexing
+    if not isinstance(df, pd.DataFrame):
+        raise ValueError("Input must be a pandas DataFrame")
+
     fac_df = df.copy()
-    fac_df = fac_df.T.mean()
-    fac_df = round(fac_df, 2)
-    min_lim = min(fac_df)
-    min_lim = max(0, min_lim - 1)
-    max_lim = round(max(fac_df) + 0.5, 0)
+
+    # Calculate average for each faculty
+    if isinstance(fac_df.index, pd.RangeIndex):
+        # If it's a range index, we need to set the index first
+        fac_df.set_index("Facultad", inplace=True)
+
+    # Calculate mean across columns (rating categories)
+    fac_means = fac_df.mean(axis=1)
+
+    # Sort for better visualization
+    fac_means = fac_means.sort_values()
+
+    min_lim = max(0, min(fac_means) - 1)
+    max_lim = round(max(fac_means) + 0.5, 0)
     ax.set_xlim(min_lim, max_lim)
+
     bars = ax.barh(
-        fac_df.index, fac_df, color=[gb_cmap(value / 10.0) for value in fac_df]
+        fac_means.index,
+        fac_means.values,
+        color=[gb_cmap(value / 10.0) for value in fac_means.values],
     )
 
-    ax.set_yticks(list(fac_df.index))
-    # ax.tick_params(axis="both")
-    return fig, ax
-
-
-def avrg_hist(data):
-    fig, ax = crplot()
-    min_lim = min(data.index)
-    min_lim = max(0, min_lim - 1)
-    max_lim = round(max(data["Nota"]) + 0.5, 0)
-    ax.set_xlim(min_lim, max_lim)
-    bars = ax.barh(
-        data["Brigada"](),
-        data["Nota"](),
-        color=[gb_cmap(value) for value in data["Nota"]],
-    )
-    ax.bar_label(bars, labels=[round(value, 1) for value in data["Nota"]])
-    ax.set_yticks(list(data["Brigada"]()))
-    ax.tick_params(axis="both")
+    ax.set_yticks(list(fac_means.index))
     return fig, ax
 
 
 def mark_hist(data):
+    """Create a grade distribution histogram"""
     fig, ax = crplot()
     fig.set_facecolor("none")
-    bars = ax.bar(
-        data["Nota"],
-        data["Count"],
-    )
-    ax.bar_label(bars, labels=data["Nota"], fontsize=20)
-    ax.tick_params(axis="both")
+
+    # Handle different input types
+    if isinstance(data, pd.DataFrame):
+        # DataFrame with 'Nota' and 'Count' columns
+        notas = data["Nota"].astype(str).tolist()
+        counts = data["Count"].tolist()
+    elif isinstance(data, dict):
+        # Dictionary with grade counts
+        if "Nota" in data and "Count" in data:
+            notas = [str(n) for n in data["Nota"]]
+            counts = data["Count"]
+        else:
+            notas = list(data.keys())
+            counts = list(data.values())
+    else:
+        raise ValueError("Input must be DataFrame or dict")
+
+    bars = ax.bar(notas, counts)
+
+    # Add labels
+    for bar, count in zip(bars, counts):
+        height = bar.get_height()
+        ax.text(
+            bar.get_x() + bar.get_width() / 2.0,
+            height + 0.5,
+            f"{count}",
+            ha="center",
+            va="bottom",
+            fontsize=12,
+        )
+
+    ax.set_xlabel("Nota")
+    ax.set_ylabel("Cantidad")
     return fig, ax
 
 
-def matr_pie(data: dict, colors: list[str]):
-    print(data)
+def matr_pie(data: dict, colors: list[str] = None):
+    """Create a pie chart for enrollment data"""
     fig, ax = crplot()
+
+    # Handle input types
+    if isinstance(data, pd.DataFrame):
+        labels = data["Brigada"].tolist()
+        sizes = data["Count"].tolist()
+    elif isinstance(data, dict):
+        if "Brigada" in data and "Count" in data:
+            labels = data["Brigada"]
+            sizes = data["Count"]
+        else:
+            labels = list(data.keys())
+            sizes = list(data.values())
+    else:
+        raise ValueError("Input must be DataFrame or dict")
+
+    # Default colors if not provided
+    if colors is None:
+        colors = plt.cm.Set3(np.linspace(0, 1, len(labels)))
+
     ax.pie(
-        data["Count"],
-        labels=data["Brigada"],
+        sizes,
+        labels=labels,
         colors=colors,
         wedgeprops={"width": 0.35},
-        textprops={"fontsize": 20, "fontweight": "bold"},
+        textprops={"fontsize": 12, "fontweight": "bold"},
     )
+
+    # Inner ring with counts
     ax.pie(
-        data["Count"],
-        labels=data["Count"],
-        colors=["#ffffff00" for _ in data],
+        sizes,
+        labels=sizes,
+        colors=["#ffffff00" for _ in sizes],
         radius=0.70,
-        textprops={"color": "white", "fontsize": 14, "fontweight": "bold"},
+        textprops={"color": "white", "fontsize": 10, "fontweight": "bold"},
     )
+
     ax.text(
         0,
         0,
-        sum(data["Count"]),
+        str(sum(sizes)),
         ha="center",
         va="center",
-        fontsize=32,
+        fontsize=24,
         fontweight="bold",
     )
     return fig, ax
+
+
+# Import pandas if needed for type checking
+import pandas as pd

@@ -5,11 +5,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from PIL import Image
 
 # Import plot utilities
 import plots
-from PIL import Image
-
 import streamlit as st
 
 # Set page configuration
