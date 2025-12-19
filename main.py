@@ -254,6 +254,22 @@ class DataManager:
         except:
             return round(np.random.uniform(3, 9), 1), {}
 
+    @staticmethod
+    def get_career_rating(faculty):
+        """Get rating data for a specific faculty"""
+        try:
+            df = pd.read_csv("")
+            faculty_data = df[df["Facultad"] == faculty]
+            if not faculty_data.empty:
+                rating_columns = [
+                    col for col in faculty_data.columns if col != "Facultad"
+                ]
+                avg_rating = faculty_data[rating_columns].mean(axis=1).values[0]
+                return avg_rating, faculty_data[rating_columns].iloc[0].to_dict()
+            return 0.0, {}
+        except:
+            return round(np.random.uniform(3, 9), 1), {}
+
 
 # ============================================================================
 # AUTHENTICATION
@@ -849,9 +865,21 @@ class FacultyDashboardView:
     @staticmethod
     def render_careers_section(faculty):
         """Render detailed career information for the faculty"""
+        # Career details
+        careers = DataManager.get_careers(faculty)
+
+        if not careers:
+            st.info("No hay información de carreras disponible para esta facultad.")
+            return
+
+        selected_career = st.selectbox(
+            "Selecciona una carrera para ver detalles",
+            careers,
+            key=f"career_select_{faculty}",
+        )
 
         # Get faculty rating
-        avg_rating, rating_details = DataManager.get_faculty_rating(faculty)
+        avg_rating, rating_details = DataManager.get_career_rating(faculty)
 
         # Two equal columns for rating charts
         col1, col2 = st.columns(2)
@@ -873,19 +901,6 @@ class FacultyDashboardView:
         st.divider()
 
         st.header("🎓 Carreras Ofrecidas")
-        # Career details
-        careers = DataManager.get_careers(faculty)
-
-        if not careers:
-            st.info("No hay información de carreras disponible para esta facultad.")
-            return
-
-        selected_career = st.selectbox(
-            "Selecciona una carrera para ver detalles",
-            careers,
-            key=f"career_select_{faculty}",
-        )
-
         col1, col2 = st.columns([1, 1])
 
         with col1:
@@ -911,7 +926,6 @@ class FacultyDashboardView:
             for index, (stat, value) in enumerate(stats.items()):
                 with columns[index % 2]:
                     st.metric(stat, value)
-            st.markdown(" ")
             st.markdown(" ")
             st.markdown(" ")
             st.markdown(" ")
