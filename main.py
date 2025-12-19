@@ -5,11 +5,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from PIL import Image
 
 # Import plot utilities
 import plots
-from PIL import Image
-
 import streamlit as st
 
 # Set page configuration
@@ -403,19 +402,19 @@ class DashboardComponents:
             display_name = full_name[:37] + "..."
 
         # Create card in fixed height container
-        with st.container(height=420):
+        with st.container():
             # Faculty icon and acronym
             found = False
             for element in os.listdir("logos"):
                 if faculty_acronym.lower() in element:
                     found = True
-                    with st.container(height=200):
+                    with st.container():
                         img = Image.open("logos/" + element)
                         img = img.resize((300, 300))
                         st.image(img)
                         break
             if not found:
-                with st.container(height=200):
+                with st.container():
                     col1, col2 = st.columns([1, 3])
                     with col1:
                         st.markdown(
@@ -912,8 +911,10 @@ class FacultyDashboardView:
             for index, (stat, value) in enumerate(stats.items()):
                 with columns[index % 2]:
                     st.metric(stat, value)
-            st.markdown("")
-            st.markdown("")
+            st.markdown(" ")
+            st.markdown(" ")
+            st.markdown(" ")
+            st.markdown(" ")
             with st.expander("🎯 Perfil del Graduado"):
                 profile_points = FacultyDashboardView.get_graduate_profile(
                     faculty, selected_career
@@ -1406,28 +1407,31 @@ class EvaluationView:
                 height=100,
             )
 
+            submitted = st.form_submit_button(
+                "📤 Enviar Evaluación", use_container_width=True
+            )
             # Form buttons
-            col1, col2 = st.columns(2)
-            with col1:
-                submitted = st.form_submit_button(
-                    "📤 Enviar Evaluación", use_container_width=True
-                )
-            with col2:
-                reset_clicked = st.form_submit_button(
-                    "🔄 Limpiar Formulario", use_container_width=True
-                )
+            # col1, col2 = st.columns(2)
+            # with col1:
+            #     submitted = st.form_submit_button(
+            #         "📤 Enviar Evaluación", use_container_width=True
+            #     )
+            # with col2:
+            #     reset_clicked = st.form_submit_button(
+            #         "🔄 Limpiar Formulario", use_container_width=True
+            #     )
 
-            if reset_clicked:
-                # Clear all form data
-                st.session_state.semester_form_data = {"ratings": {}, "comment": ""}
+            # if reset_clicked:
+            #     # Clear all form data
+            #     st.session_state.semester_form_data = {"ratings": {}, "comment": ""}
 
-                # Clear slider values by re-rendering
-                for category in categories:
-                    if f"slider_{category}" in st.session_state:
-                        del st.session_state[f"slider_{category}"]
+            #     # Clear slider values by re-rendering
+            #     for category in categories:
+            #         if f"slider_{category}" in st.session_state:
+            #             del st.session_state[f"slider_{category}"]
 
-                st.success("¡Formulario limpiado!")
-                st.rerun()
+            #     st.success("¡Formulario limpiado!")
+            #     st.rerun()
 
             if submitted:
                 # Save form data
@@ -1470,43 +1474,59 @@ class EvaluationView:
 
         with st.form("class_evaluation", clear_on_submit=False):
             # Class selection
-            col1, col2 = st.columns(2)
-            with col1:
-                classes = [
-                    "Visualización de Datos",
-                    "Análisis Matemático I",
-                    "Programación",
-                    "Bases de Datos",
-                    "Aprendizaje Automático",
-                ]
-                selected_class = st.selectbox(
-                    "Selecciona la clase",
-                    classes,
-                    index=classes.index(
-                        st.session_state.class_form_data.get(
-                            "class", "Visualización de Datos"
-                        )
-                    ),
-                )
+            # col1, col2 = st.columns(2)
+            # with col1:
+            #     classes = [
+            #         "Visualización de Datos",
+            #         "Análisis Matemático I",
+            #         "Programación",
+            #         "Bases de Datos",
+            #         "Aprendizaje Automático",
+            #     ]
+            #     selected_class = st.selectbox(
+            #         "Selecciona la clase",
+            #         classes,
+            #         index=classes.index(
+            #             st.session_state.class_form_data.get(
+            #                 "class", "Visualización de Datos"
+            #             )
+            #         ),
+            #     )
 
-            with col2:
-                professors = [
-                    "Dr. Carlos Méndez",
-                    "Dra. Ana García",
-                    "Prof. Miguel Torres",
-                    "Dra. Laura Rodríguez",
-                    "Dr. Javier López",
-                ]
-                selected_professor = st.selectbox(
-                    "Profesor",
-                    professors,
-                    index=professors.index(
-                        st.session_state.class_form_data.get(
-                            "professor", "Dr. Carlos Méndez"
-                        )
-                    ),
-                )
+            # with col2:
+            #     professors = [
+            #         "Dr. Carlos Méndez",
+            #         "Dra. Ana García",
+            #         "Prof. Miguel Torres",
+            #         "Dra. Laura Rodríguez",
+            #         "Dr. Javier López",
+            #     ]
+            #     selected_professor = st.selectbox(
+            #         "Profesor",
+            #         professors,
+            #         index=professors.index(
+            #             st.session_state.class_form_data.get(
+            #                 "professor", "Dr. Carlos Méndez"
+            #             )
+            #         ),
+            #     )
 
+            classes = [
+                "Visualización de Datos",
+                "Análisis Matemático I",
+                "Programación",
+                "Bases de Datos",
+                "Aprendizaje Automático",
+            ]
+            selected_class = st.selectbox(
+                "Selecciona la clase",
+                classes,
+                index=classes.index(
+                    st.session_state.class_form_data.get(
+                        "class", "Visualización de Datos"
+                    )
+                ),
+            )
             # Rating categories with tooltips
             st.subheader("Categorías de Evaluación (1-10)")
 
@@ -1549,39 +1569,42 @@ class EvaluationView:
                 height=100,
             )
 
+            submitted = st.form_submit_button(
+                "📤 Enviar Evaluación", use_container_width=True
+            )
             # Form buttons
-            col1, col2 = st.columns(2)
-            with col1:
-                submitted = st.form_submit_button(
-                    "📤 Enviar Evaluación", use_container_width=True
-                )
-            with col2:
-                reset_clicked = st.form_submit_button(
-                    "🔄 Limpiar Formulario", use_container_width=True
-                )
+            # col1, col2 = st.columns(2)
+            # with col1:
+            #     submitted = st.form_submit_button(
+            #         "📤 Enviar Evaluación", use_container_width=True
+            #     )
+            # with col2:
+            #     reset_clicked = st.form_submit_button(
+            #         "🔄 Limpiar Formulario", use_container_width=True
+            #     )
 
-            if reset_clicked:
-                # Clear all form data
-                st.session_state.class_form_data = {
-                    "class": "Visualización de Datos",
-                    "professor": "Dr. Carlos Méndez",
-                    "ratings": {},
-                    "suggestions": "",
-                }
+            # if reset_clicked:
+            #     # Clear all form data
+            #     st.session_state.class_form_data = {
+            #         "class": "Visualización de Datos",
+            #         "professor": "Dr. Carlos Méndez",
+            #         "ratings": {},
+            #         "suggestions": "",
+            #     }
 
-                # Clear slider values
-                for category in categories:
-                    if f"class_slider_{category}" in st.session_state:
-                        del st.session_state[f"class_slider_{category}"]
+            #     # Clear slider values
+            #     for category in categories:
+            #         if f"class_slider_{category}" in st.session_state:
+            #             del st.session_state[f"class_slider_{category}"]
 
-                st.success("¡Formulario limpiado!")
-                st.rerun()
+            #     st.success("¡Formulario limpiado!")
+            #     st.rerun()
 
             if submitted:
                 # Save form data
                 st.session_state.class_form_data = {
                     "class": selected_class,
-                    "professor": selected_professor,
+                    # "professor": selected_professor,
                     "ratings": class_ratings,
                     "suggestions": suggestions,
                 }
@@ -1596,7 +1619,7 @@ class EvaluationView:
                 with st.expander("📋 Ver Resumen de tu Evaluación"):
                     st.metric("Calificación Promedio", f"{avg_rating:.1f}/10")
                     st.write(f"**Clase:** {selected_class}")
-                    st.write(f"**Profesor:** {selected_professor}")
+                    # st.write(f"**Profesor:** {selected_professor}")
                     st.write("**Detalle por categoría:**")
                     for category, rating in class_ratings.items():
                         st.write(f"• {category}: {rating}/10")
@@ -1666,7 +1689,7 @@ class CommentsView:
                         ],
                     )
                     comment_text = st.text_area("Tu comentario", height=100)
-                    rating = st.slider("Calificación (opcional)", 1, 10, 6)
+                    # rating = st.slider("Calificación (opcional)", 1, 10, 6)
 
                     col1, col2 = st.columns(2)
                     with col1:
@@ -1685,9 +1708,9 @@ class CommentsView:
                             "facultad": st.session_state.user_faculty,
                             "carrera": st.session_state.user_career,
                             "clase": comment_class,
-                            "profesor": "Por definir",
+                            "profesor": "Dr. Marlon Castro",
                             "comentario": comment_text,
-                            "calificacion": rating,
+                            "calificacion": None,
                             "fecha": datetime.now().strftime("%Y-%m-%d"),
                         }
                         st.session_state.comments.insert(0, new_comment)
