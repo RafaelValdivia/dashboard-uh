@@ -849,7 +849,6 @@ class FacultyDashboardView:
     @staticmethod
     def render_careers_section(faculty):
         """Render detailed career information for the faculty"""
-        st.header("🎓 Carreras Ofrecidas")
 
         # Get faculty rating
         avg_rating, rating_details = DataManager.get_faculty_rating(faculty)
@@ -873,6 +872,7 @@ class FacultyDashboardView:
 
         st.divider()
 
+        st.header("🎓 Carreras Ofrecidas")
         # Career details
         careers = DataManager.get_careers(faculty)
 
