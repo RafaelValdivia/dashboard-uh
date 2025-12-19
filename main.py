@@ -880,24 +880,24 @@ class FacultyDashboardView:
         )
 
         # Get faculty rating
-        avg_rating, rating_details = DataManager.get_faculty_rating(faculty)
+        # avg_rating, rating_details = DataManager.get_faculty_rating(faculty)
 
-        # Two equal columns for rating charts
-        col1, col2 = st.columns(2)
+        # # Two equal columns for rating charts
+        # col1, col2 = st.columns(2)
 
-        with col1:
-            st.markdown("### Calificación del Semestre")
-            fig, ax = plots.rating_pie(avg_rating)
-            st.pyplot(fig, use_container_width=True)
+        # with col1:
+        #     st.markdown("### Calificación del Semestre")
+        #     fig, ax = plots.rating_pie(avg_rating)
+        #     st.pyplot(fig, use_container_width=True)
 
-        with col2:
-            if rating_details:
-                st.markdown("### Calificación por Categoría")
-                ratings_series = pd.Series(rating_details)
-                fig, ax = plots.rating_hist(ratings_series)
-                st.pyplot(fig, use_container_width=True)
-            else:
-                st.info("No hay datos de calificación disponibles por categoría")
+        # with col2:
+        #     if rating_details:
+        #         st.markdown("### Calificación por Categoría")
+        #         ratings_series = pd.Series(rating_details)
+        #         fig, ax = plots.rating_hist(ratings_series)
+        #         st.pyplot(fig, use_container_width=True)
+        #     else:
+        #         st.info("No hay datos de calificación disponibles por categoría")
 
         st.divider()
 
