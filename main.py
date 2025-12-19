@@ -879,7 +879,7 @@ class FacultyDashboardView:
         )
 
         # Get faculty rating
-        avg_rating, rating_details = DataManager.get_career_rating(faculty)
+        avg_rating, rating_details = DataManager.get_faculty_rating(faculty)
 
         # Two equal columns for rating charts
         col1, col2 = st.columns(2)
@@ -926,7 +926,6 @@ class FacultyDashboardView:
             for index, (stat, value) in enumerate(stats.items()):
                 with columns[index % 2]:
                     st.metric(stat, value)
-            st.markdown(" ")
             st.markdown(" ")
             st.markdown(" ")
             st.markdown(" ")
