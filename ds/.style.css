@@ -1,0 +1,192 @@
+/* Enhanced styles for faculty cards and navigation */
+
+/* Faculty card styling */
+.faculty-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin: 0.5rem;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.faculty-card:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+    transform: translateY(-3px);
+}
+
+.faculty-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #3498db;
+}
+
+.faculty-card-code {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.faculty-card-name {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin-bottom: 0.5rem;
+}
+
+.faculty-card-careers {
+    font-size: 0.7rem;
+    color: #95a5a6;
+}
+
+/* Career selection styling */
+.career-selector {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #3498db;
+}
+
+.career-option {
+    padding: 0.5rem 1rem;
+    margin: 0.25rem 0;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.career-option:hover {
+    background: #e9ecef;
+}
+
+.career-option.active {
+    background: #3498db;
+    color: white;
+}
+
+/* Responsive grid for faculty cards */
+.faculty-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+/* Button enhancements */
+.stButton > button {
+    border-radius: 5px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    transform: scale(1.05);
+}
+/* style.css - Only for cursor fixes */
+/* Pointer cursors for ALL interactive elements */
+button,
+.stButton > button,
+.stSelectbox > div,
+.stSlider > div,
+.stCheckbox > div,
+.stRadio > div,
+.stFormSubmitButton,
+.stTextInput > div,
+.stTextArea > div,
+.stNumberInput > div,
+.stDateInput > div,
+.stTimeInput > div,
+.stFileUploader > div,
+.stMultiSelect > div,
+.stColorPicker > div {
+    cursor: pointer !important;
+}
+
+/* Form elements need pointer too */
+.stSlider > div > div > div > div {
+    cursor: pointer !important;
+}
+
+/* Tooltip styling */
+[data-testid="stTooltip"] {
+    font-size: 14px !important;
+    max-width: 300px !important;
+}
+/* Metric card styling */
+.metric-card {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin: 0.5rem;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .faculty-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .faculty-card {
+        height: 160px;
+        padding: 1rem;
+    }
+
+    .faculty-card-icon {
+        font-size: 2rem;
+    }
+
+    .faculty-card-code {
+        font-size: 1rem;
+    }
+}
+/* style.css - Only for cursor fixes */
+/* Pointer cursors for ALL interactive elements */
+button,
+.stButton > button,
+.stSelectbox > div,
+.stSlider > div,
+.stCheckbox > div,
+.stRadio > div,
+.stFormSubmitButton,
+.stTextInput > div,
+.stTextArea > div,
+.stNumberInput > div,
+.stDateInput > div,
+.stTimeInput > div,
+.stFileUploader > div,
+.stMultiSelect > div,
+.stColorPicker > div {
+    cursor: pointer !important;
+}
+
+/* Form elements need pointer too */
+.stSlider > div > div > div > div {
+    cursor: pointer !important;
+}
+
+/* Tooltip styling */
+[data-testid="stTooltip"] {
+    font-size: 14px !important;
+    max-width: 300px !important;
+}

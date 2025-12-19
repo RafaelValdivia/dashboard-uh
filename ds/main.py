@@ -8,6 +8,7 @@ import pandas as pd
 
 # Import plot utilities
 import plots
+from PIL import Image
 
 import streamlit as st
 
@@ -19,10 +20,109 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+try:
+    with open("style.css", "r") as style:
+        st.markdown(
+            f"""
+            <style>
+            {style.read()}
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+except:
+    pass
+
 # Minimal CSS for pointer cursor only
 st.markdown(
     """
 <style>
+/* style.css - Enhanced version */
+/* Custom styles for the University Dashboard */
+
+/* Cursor pointers for interactive elements */
+button, .stButton > button, .stSelectbox, .stSlider,
+.stCheckbox, .stRadio, .stFormSubmitButton {
+    cursor: pointer !important;
+}
+
+/* Consistent column heights */
+[data-testid="column"] {
+    min-height: 100px;
+}
+
+/* Faculty card styling */
+.faculty-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 280px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.faculty-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* Consistent button heights */
+.stButton > button {
+    min-height: 40px !important;
+    height: 40px !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    line-height: 1.2 !important;
+    padding: 8px 16px !important;
+    margin: 0 !important;
+}
+
+/* Form element styling */
+.stSelectbox > div > div {
+    cursor: pointer !important;
+}
+
+.stSlider > div > div {
+    cursor: pointer !important;
+}
+
+/* Dataframe hiding */
+[data-testid="stDataFrame"] {
+    display: none;
+}
+
+/* Consistent metric cards */
+.metric-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Chart container styling */
+.chart-container {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Consistent spacing */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 2px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 50px;
+    padding: 10px 16px;
+}
     /* Pointer cursors for interactive elements */
     button,
     .stButton > button,
@@ -64,7 +164,7 @@ class DataManager:
         "MATCOM": "Matemática y Computación",
         "FF": "Física",
         "FQ": "Química",
-        "FBIOM": "Biología",
+        "FBIO": "Biología",
         "FHS": "Historia y Sociología",
         "INSTEC": "Tecnologías y Ciencias Aplicadas",
         "FTUR": "Turismo",
@@ -75,7 +175,6 @@ class DataManager:
         "IFAL": "Farmacia y Alimentos",
         "ISDI": "Diseño Industrial",
         "CSGH": "Gestión Habana",
-        "FENHI": "Economía y Negocios",
         "CONFIN": "Contabilidad y Finanzas",
         "EKO": "Economía",
         "GEO": "Geografía",
@@ -123,9 +222,9 @@ class DataManager:
             "MATCOM": ["Matemática", "Ciencias de la Computación", "Ciencia de Datos"],
             "FF": ["Licenciatura en Física", "Ingeniería Física"],
             "FQ": ["Licenciatura en Química", "Ingeniería Química"],
-            "FBIOM": ["Licenciatura en Biología", "Microbiología", "Bioquímica"],
+            "FBIO": ["Licenciatura en Biología", "Microbiología", "Bioquímica"],
             "FHS": ["Licenciatura en Historia", "Sociología", "Filosofía"],
-            "INSTEC": ["Ingeniería en Telecomunicaciones", "Ingeniería Eléctrica"],
+            "INSTEC": ["Fisica Nuclear", "Radioquimica", "Meteorologia"],
             "FTUR": ["Licenciatura en Turismo"],
             "FCOM": ["Comunicación Social", "Periodismo"],
             "LEX": ["Derecho"],
@@ -134,7 +233,6 @@ class DataManager:
             "IFAL": ["Licenciatura en Farmacia", "Ciencia de los Alimentos"],
             "ISDI": ["Diseño Industrial", "Diseño de Comunicación Visual"],
             "CSGH": ["Gestión del Patrimonio Cultural"],
-            "FENHI": ["Licenciatura en Economía", "Administración de Empresas"],
             "CONFIN": ["Licenciatura en Contabilidad y Finanzas"],
             "EKO": ["Licenciatura en Economía"],
             "GEO": ["Licenciatura en Geografía"],
@@ -240,7 +338,7 @@ class AuthenticationManager:
             },
             {
                 "estudiante": "Carlos Rodríguez",
-                "facultad": "FBIOM",
+                "facultad": "FBIO",
                 "clase": "Biología Molecular",
                 "profesor": "Dra. Ana García",
                 "comentario": "La materia es interesante pero la carga de trabajo es excesiva.",
@@ -305,29 +403,40 @@ class DashboardComponents:
             display_name = full_name[:37] + "..."
 
         # Create card in fixed height container
-        with st.container(height=280):
+        with st.container(height=420):
             # Faculty icon and acronym
-            col1, col2 = st.columns([1, 3])
-            with col1:
+            found = False
+            for element in os.listdir("logos"):
+                if faculty_acronym.lower() in element:
+                    found = True
+                    with st.container(height=200):
+                        img = Image.open("logos/" + element)
+                        img = img.resize((300, 300))
+                        st.image(img)
+                        break
+            if not found:
+                with st.container(height=200):
+                    col1, col2 = st.columns([1, 3])
+                    with col1:
+                        st.markdown(
+                            f"<div style='text-align: center; font-size: 2rem;'>🏛️</div>",
+                            unsafe_allow_html=True,
+                        )
+                    with col2:
+                        st.markdown(
+                            f"<h3 style='margin: 0;'>{faculty_acronym}</h3>",
+                            unsafe_allow_html=True,
+                        )
+            with st.container(height=100):
+                # Full name
                 st.markdown(
-                    f"<div style='text-align: center; font-size: 2rem;'>🏛️</div>",
+                    f"<div style='text-align: center; padding: 10px 0; font-size: 0.9rem; color: #666;'>{display_name}</div>",
                     unsafe_allow_html=True,
                 )
-            with col2:
-                st.markdown(
-                    f"<h3 style='margin: 0;'>{faculty_acronym}</h3>",
-                    unsafe_allow_html=True,
-                )
-
-            # Full name
-            st.markdown(
-                f"<div style='text-align: center; padding: 10px 0; font-size: 0.9rem; color: #666;'>{display_name}</div>",
-                unsafe_allow_html=True,
-            )
 
             # Spacing
-            st.write("")
-            st.write("")
+            # st.write("")
+            # st.write("")
 
             # Explore button at bottom
             if st.button(
@@ -463,7 +572,7 @@ class LoginView:
 
     @staticmethod
     def render():
-        DashboardComponents.create_header("Sistema de Evaluación", "🔐")
+        DashboardComponents.create_header("Sistema de Evaluación", "🎓")
 
         with st.form("login_form"):
             username = st.text_input("Usuario")
@@ -545,11 +654,12 @@ class MainDashboardView:
                 )
 
             with col3:
-                total_students = (
-                    data["matcom_ratings"]["ID"].nunique()
-                    if not data["matcom_ratings"].empty
-                    else 0
-                )
+                # total_students = (
+                #     data["matcom_ratings"]["ID"].nunique()
+                #     if not data["matcom_ratings"].empty
+                #     else 0
+                # )
+                total_students = 1429
                 st.markdown(
                     DashboardComponents.create_metric_card(
                         "Estudiantes", f"{total_students:,}", icon="👥"
@@ -664,7 +774,7 @@ class FacultyDashboardView:
                 "MATCOM": "La Facultad de Matemática y Computación (MATCOM) es el centro rector para la formación de profesionales en Matemática, Ciencias de la Computación y Ciencia de Datos en Cuba. Fundada en 1976, combina tradición matemática con innovación tecnológica.",
                 "FF": "La Facultad de Física forma profesionales con sólida formación científica para la docencia, investigación e innovación tecnológica en diversas áreas de la física pura y aplicada.",
                 "FQ": "Facultad de Química, centro de excelencia en la formación de químicos con capacidad para la investigación, producción y control de calidad en la industria química y farmacéutica.",
-                "FBIOM": "Facultad de Biología dedicada al estudio de los seres vivos, formando biólogos, microbiólogos y bioquímicos para la investigación y aplicación en ciencias de la vida.",
+                "FBIO": "Facultad de Biología dedicada al estudio de los seres vivos, formando biólogos, microbiólogos y bioquímicos para la investigación y aplicación en ciencias de la vida.",
                 "FHS": "Facultad de Historia y Sociología que estudia el desarrollo de las sociedades humanas, formando historiadores y sociólogos con visión crítica y analítica.",
                 "INSTEC": "Instituto Superior de Tecnologías y Ciencias Aplicadas, centro de excelencia en ingenierías avanzadas y tecnologías de punta.",
                 "FTUR": "Facultad de Turismo dedicada a la formación de profesionales para la gestión y desarrollo del sector turístico.",
@@ -681,7 +791,7 @@ class FacultyDashboardView:
                 ### Sobre la Facultad
                 {descriptions.get(faculty, "Facultad de la Universidad de La Habana con larga tradición académica y excelencia en la formación profesional.")}
             """)
-
+        with col1:
             st.markdown("### 📋 Información Clave")
             info_data = {
                 "📅 Año de fundación": FacultyDashboardView.get_founding_year(faculty),
@@ -719,6 +829,23 @@ class FacultyDashboardView:
             for index, (stat, value) in enumerate(stats.items()):
                 with columns[index]:
                     st.metric(stat, value)
+
+        avg_rating, rating_details = DataManager.get_faculty_rating(faculty)
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("### Calificación del Semestre")
+            fig, ax = plots.rating_pie(avg_rating)
+            st.pyplot(fig, use_container_width=True)
+
+        with col2:
+            if rating_details:
+                st.markdown("### Calificación por Categoría")
+                ratings_series = pd.Series(rating_details)
+                fig, ax = plots.rating_hist(ratings_series)
+                st.pyplot(fig, use_container_width=True)
+            else:
+                st.info("No hay datos de calificación disponibles por categoría")
 
     @staticmethod
     def render_careers_section(faculty):
@@ -989,7 +1116,7 @@ class FacultyDashboardView:
             "MATCOM": "1976",
             "FF": "1962",
             "FQ": "1963",
-            "FBIOM": "1964",
+            "FBIO": "1964",
             "FHS": "1962",
             "INSTEC": "1980",
             "FTUR": "1995",
@@ -1010,7 +1137,7 @@ class FacultyDashboardView:
             "MATCOM": "Dr. Carlos Martínez",
             "FF": "Dr. Arbelio Pentón Madrigal",
             "FQ": "Dra. Marta Álvarez",
-            "FBIOM": "Dr. Pedro Pablo García",
+            "FBIO": "Dr. Pedro Pablo García",
             "FHS": "Dra. Mayra Mena",
             "INSTEC": "Dr. Roberto González",
             "FTUR": "MSc. Ana López",
@@ -1031,7 +1158,7 @@ class FacultyDashboardView:
             "MATCOM": "550",
             "FF": "420",
             "FQ": "380",
-            "FBIOM": "450",
+            "FBIO": "450",
             "FHS": "320",
             "INSTEC": "280",
             "FTUR": "200",
@@ -1222,8 +1349,13 @@ class EvaluationView:
     def render_semester_evaluation():
         DashboardComponents.create_header("Evaluar Semestre", "⭐")
 
-        if st.session_state.user_role == "invitado":
-            st.warning("Los invitados no pueden realizar evaluaciones.")
+        if st.session_state.user_role in ["invitado", "administrador"]:
+            user_role = (
+                "invitados"
+                if st.session_state.user_role == "invitado"
+                else "administradores"
+            )
+            st.warning(f"Los {user_role} no pueden realizar evaluaciones.")
             return
 
         # Categories with detailed tooltips
@@ -1327,8 +1459,13 @@ class EvaluationView:
     def render_class_evaluation():
         DashboardComponents.create_header("Evaluar Clase", "📚")
 
-        if st.session_state.user_role == "invitado":
-            st.warning("Los invitados no pueden realizar evaluaciones.")
+        if st.session_state.user_role in ["invitado", "administrador"]:
+            user_role = (
+                "invitados"
+                if st.session_state.user_role == "invitado"
+                else "administradores"
+            )
+            st.warning(f"Los {user_role} no pueden realizar evaluaciones.")
             return
 
         with st.form("class_evaluation", clear_on_submit=False):
