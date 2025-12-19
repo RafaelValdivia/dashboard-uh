@@ -90,7 +90,36 @@
 .stButton > button:hover {
     transform: scale(1.05);
 }
+/* style.css - Only for cursor fixes */
+/* Pointer cursors for ALL interactive elements */
+button,
+.stButton > button,
+.stSelectbox > div,
+.stSlider > div,
+.stCheckbox > div,
+.stRadio > div,
+.stFormSubmitButton,
+.stTextInput > div,
+.stTextArea > div,
+.stNumberInput > div,
+.stDateInput > div,
+.stTimeInput > div,
+.stFileUploader > div,
+.stMultiSelect > div,
+.stColorPicker > div {
+    cursor: pointer !important;
+}
 
+/* Form elements need pointer too */
+.stSlider > div > div > div > div {
+    cursor: pointer !important;
+}
+
+/* Tooltip styling */
+[data-testid="stTooltip"] {
+    font-size: 14px !important;
+    max-width: 300px !important;
+}
 /* Metric card styling */
 .metric-card {
     text-align: center;
@@ -130,4 +159,34 @@
     .faculty-card-code {
         font-size: 1rem;
     }
+}
+/* style.css - Only for cursor fixes */
+/* Pointer cursors for ALL interactive elements */
+button,
+.stButton > button,
+.stSelectbox > div,
+.stSlider > div,
+.stCheckbox > div,
+.stRadio > div,
+.stFormSubmitButton,
+.stTextInput > div,
+.stTextArea > div,
+.stNumberInput > div,
+.stDateInput > div,
+.stTimeInput > div,
+.stFileUploader > div,
+.stMultiSelect > div,
+.stColorPicker > div {
+    cursor: pointer !important;
+}
+
+/* Form elements need pointer too */
+.stSlider > div > div > div > div {
+    cursor: pointer !important;
+}
+
+/* Tooltip styling */
+[data-testid="stTooltip"] {
+    font-size: 14px !important;
+    max-width: 300px !important;
 }
